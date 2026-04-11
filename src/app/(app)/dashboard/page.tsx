@@ -1,15 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFetchOnce } from '@/hooks/useFetchOnce';
 import Link from 'next/link';
 import { useLayoutUser } from '@/components/AppLayout';
 import type { Enrollment } from '@/types/database';
 
-export const dynamic = 'force-dynamic';
-
-export default function DashboardPage() {
+function DashboardContent() {
   const { user, setPageLoading } = useLayoutUser();
   const searchParams = useSearchParams();
   const celebrateCourseId = searchParams.get('celebrate');
@@ -245,5 +243,13 @@ export default function DashboardPage() {
           </div>
         )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="loader" /></div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply text-gray-900 bg-slate-50 antialiased;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-secondary-700 to-secondary-600 text-white shadow-md shadow-secondary-700/20 hover:shadow-lg hover:shadow-secondary-700/30 hover:from-secondary-600 hover:to-secondary-500 focus:ring-secondary-400;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-gray-700 border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 focus:ring-slate-300;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-secondary-600 text-secondary-700 hover:bg-secondary-50 hover:border-secondary-700;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white shadow-sm hover:bg-red-700 focus:ring-red-400;
+  }
+
+  .btn-green {
+    @apply btn bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-md shadow-emerald-700/20 hover:shadow-lg hover:shadow-emerald-700/30 hover:from-emerald-500 hover:to-emerald-400 focus:ring-emerald-400;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-gray-600 hover:bg-slate-100 hover:text-gray-900 focus:ring-slate-300 shadow-none;
+  }
+
+  .action-btn {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors;
+  }
+
+  .action-view {
+    @apply action-btn text-secondary-600 hover:text-secondary-700 hover:bg-secondary-50;
+  }
+
+  .action-edit {
+    @apply action-btn text-amber-600 hover:text-amber-700 hover:bg-amber-50;
+  }
+
+  .action-delete {
+    @apply action-btn text-red-500 hover:text-red-600 hover:bg-red-50;
+  }
+
+  .action-save {
+    @apply action-btn text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50;
+  }
+
+  .action-cancel {
+    @apply action-btn text-slate-400 hover:text-slate-600 hover:bg-slate-50;
+  }
+
+  .input {
+    @apply block w-full rounded-md border border-slate-200 bg-white text-gray-900 placeholder-slate-400 transition-all duration-200 focus:border-secondary-300 focus:ring-1 focus:ring-secondary-200 sm:text-base py-3 px-4;
+  }
+
+  textarea.input {
+    resize: none;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-green {
+    @apply badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20;
+  }
+
+  .badge-yellow {
+    @apply badge bg-amber-50 text-amber-700 ring-1 ring-amber-600/20;
+  }
+
+  .badge-red {
+    @apply badge bg-red-50 text-red-700 ring-1 ring-red-600/20;
+  }
+
+  .badge-blue {
+    @apply badge bg-blue-50 text-blue-700 ring-1 ring-blue-600/20;
+  }
+
+  .badge-gray {
+    @apply badge bg-slate-100 text-slate-600 ring-1 ring-slate-500/20;
+  }
+
+  .section-title {
+    @apply text-xl font-bold text-slate-900 tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-slate-500 mt-1;
+  }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .gradient-primary {
+    @apply bg-gradient-to-br from-secondary-700 via-secondary-600 to-cyan-600;
+  }
+
+  .gradient-warm {
+    @apply bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500;
+  }
+
+  .gradient-cool {
+    @apply bg-gradient-to-br from-violet-600 via-secondary-700 to-cyan-600;
+  }
+
+  .page-container {
+    @apply px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto;
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden bg-white rounded-2xl p-6 border border-slate-100 shadow-sm;
+  }
+
+  .tab-active {
+    @apply bg-gradient-to-r from-secondary-700 to-secondary-600 text-white shadow-md shadow-secondary-700/20;
+  }
+
+  .tab-inactive {
+    @apply text-slate-500 hover:text-slate-700 hover:bg-slate-50;
+  }
+
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 px-8 text-center;
+  }
+
+  .modal-backdrop {
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm;
+    z-index: 40;
+  }
+
+  .modal-content {
+    @apply relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 border border-slate-100;
+    z-index: 50;
+  }
+
+  /* Premium UI Helpers */
+  .premium-card {
+    @apply bg-white rounded-3xl border border-slate-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300;
+  }
+
+  .video-glow {
+    @apply relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,105,137,0.15)];
+  }
+
+  .sidebar-item-active {
+    @apply bg-emerald-50/60 border-l-4 border-l-emerald-500 shadow-sm shadow-emerald-500/5;
+  }
+
+  .text-prose {
+    @apply text-slate-600 leading-[1.8] text-[1.05rem] font-normal;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: relative;
+  animation: loaderRotate 1s linear infinite;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 5px solid #006989;
+  animation: prixClipFix 2s linear infinite;
+}
+
+.loader::after {
+  transform: rotate3d(90, 90, 0, 180deg);
+  border-color: #0097B2;
+}
+
+@keyframes loaderRotate {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+  }
+
+  75%,
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+  }
+}

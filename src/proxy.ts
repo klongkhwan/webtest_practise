@@ -1,49 +1,56 @@
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getMiddlewareClient } from './lib/supabase/middleware';
-
-// Routes that require authentication
-const protectedRoutes = ['/dashboard', '/enrollments', '/progress'];
-
-// Routes that should redirect authenticated users
-const authRoutes = ['/login'];
 
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = getMiddlewareClient(request, response);
+  let supabaseResponse = NextResponse.next({
+    request,
+  });
 
-  // Refresh session if expired
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: Array<{ name: string; value: string; options: object }>) {
+        cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options: object }) => {
+          request.cookies.set(name, value);
+          supabaseResponse.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  // Refresh session if it exists
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-
-  // Check if route requires authentication
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Check if route is for authentication pages
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-
-  // Redirect unauthenticated users from protected routes
-  if (isProtectedRoute && !user) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard') || 
+      request.nextUrl.pathname.startsWith('/courses') ||
+      request.nextUrl.pathname.startsWith('/lessons') ||
+      request.nextUrl.pathname.startsWith('/quiz')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
 
-  // Redirect authenticated users from auth routes to dashboard
-  if (isAuthRoute && user) {
+  // Redirect logged-in users away from auth pages
+  if (user && (
+    request.nextUrl.pathname === '/login' || 
+    request.nextUrl.pathname === '/register'
+  )) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  return response;
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

@@ -45,19 +45,20 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { data, error: signInError } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInError) {
-        throw new Error(signInError.message);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid email or password');
       }
 
-      if (data.user) {
-        // Hard redirect to ensure session is set
-        window.location.href = '/dashboard';
-      }
+      // Hard redirect to ensure session is set
+      window.location.href = '/dashboard';
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
       setError(errorMessage);

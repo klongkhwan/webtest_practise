@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 import { updateCourseSchema } from '@/lib/validation';
 
 // GET /api/courses/[id] - Get course details with lessons
@@ -8,7 +8,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await getServerClient();
     const { id } = await params;
 
     // Use admin client to bypass RLS for course data
@@ -31,7 +30,7 @@ export async function GET(
     }
 
     // Check if user is enrolled (for paid courses)
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     let enrollment = null;
     let userData = null;
     let lessonProgresses: any[] = [];
@@ -91,15 +90,14 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await getServerClient();
     const { id } = await params;
-    
+
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // Get user profile
     const { data: user } = await supabaseAdmin!
       .from('users')
@@ -171,15 +169,14 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await getServerClient();
     const { id } = await params;
-    
+
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // Get user profile
     const { data: user } = await supabaseAdmin!
       .from('users')

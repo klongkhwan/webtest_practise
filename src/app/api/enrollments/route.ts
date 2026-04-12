@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 import { enrollSchema } from '@/lib/validation';
 
 // GET /api/enrollments - Get user's enrollments
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-    
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
@@ -52,14 +50,12 @@ export async function GET(request: NextRequest) {
 // POST /api/enrollments - Enroll in a course
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-    
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // Get user profile
     const { data: user } = await supabaseAdmin!
       .from('users')

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 
 // GET /api/quiz/[id] - Get quiz with questions
 export async function GET(
@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await getServerClient();
     const { id } = await params;
 
     // Get quiz with questions and choices

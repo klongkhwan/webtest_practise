@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 
 // PATCH /api/questions/[id] - Update question and choices
 export async function PATCH(
@@ -8,9 +8,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const supabase = await getServerClient();
 
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -90,9 +89,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const supabase = await getServerClient();
 
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

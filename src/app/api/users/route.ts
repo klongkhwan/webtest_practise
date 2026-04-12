@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 
 // GET /api/users - List users (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

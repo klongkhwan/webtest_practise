@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 import { createQuestionSchema } from '@/lib/validation';
 
 // GET /api/questions?quizId= - Get questions for a quiz
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -50,9 +48,7 @@ export async function GET(request: NextRequest) {
 // POST /api/questions - Create a question (or choices)
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 
 // GET /api/progress/[courseId] - Get progress for a course
 export async function GET(
@@ -7,12 +7,11 @@ export async function GET(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const supabase = await getServerClient();
     const { courseId } = await params;
-    
+
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     

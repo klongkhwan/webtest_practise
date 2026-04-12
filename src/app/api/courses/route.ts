@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 import { createCourseSchema, updateCourseSchema } from '@/lib/validation';
 
 // GET /api/courses - List all published courses
@@ -12,8 +12,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Check if user is instructor/admin to show all statuses
-    const supabase = await getServerClient();
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
 
     let userRole: string | null = null;
     if (authUser) {
@@ -76,11 +75,9 @@ export async function GET(request: NextRequest) {
 // POST /api/courses - Create a new course (Instructor/Admin only)
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-    
     // Check authentication
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError || !authUser) {
+    const authUser = await getAuthUser(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     

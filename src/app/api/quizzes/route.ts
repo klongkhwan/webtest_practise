@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerClient, supabaseAdmin } from '@/lib/supabase/server';
+import { getAuthUser, supabaseAdmin } from '@/lib/supabase/server';
 import { createQuizSchema } from '@/lib/validation';
 
 // GET /api/quizzes?courseId=xxx - List quizzes for a course
@@ -39,9 +39,7 @@ export async function GET(request: NextRequest) {
 // POST /api/quizzes - Create a quiz
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await getServerClient();
-
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const authUser = await getAuthUser(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

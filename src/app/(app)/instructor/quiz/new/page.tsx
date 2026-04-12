@@ -358,11 +358,11 @@ function NewQuizContent() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => handleEditQuestion(index)} className="action-edit">
+                    <button onClick={() => handleEditQuestion(index)} className="action-edit w-32 justify-center">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                       Edit
                     </button>
-                    <button onClick={() => handleDeleteQuestion(index)} className="action-delete">
+                    <button onClick={() => handleDeleteQuestion(index)} className="action-delete w-32 justify-center">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       Delete
                     </button>
@@ -418,7 +418,7 @@ function NewQuizContent() {
                           value={choice.text}
                           onChange={(e) => handleChoiceChange(index, 'text', e.target.value)}
                           placeholder={`Choice ${index + 1}`}
-                          className="input flex-1"
+                          className={`input flex-1 ${choice.is_correct ? 'bg-emerald-50 border-emerald-500 ring-emerald-500' : ''}`}
                         />
                         {choices.length > 2 && (
                           <button
@@ -469,8 +469,8 @@ function NewQuizContent() {
                 />
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowQuestionModal(false)} className="btn-secondary py-2.5 px-5 text-sm">Cancel</button>
-                  <button type="submit" className="btn-primary py-2.5 px-5 text-sm">
+                  <button type="button" onClick={() => setShowQuestionModal(false)} className="action-cancel">Cancel</button>
+                  <button type="submit" className="action-save">
                     {editingIndex !== null ? 'Update' : 'Add Question'}
                   </button>
                 </div>

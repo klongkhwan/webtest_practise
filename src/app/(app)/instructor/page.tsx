@@ -112,7 +112,7 @@ export default function InstructorPage() {
       const response = await fetch('/api/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, is_paid: false, price: 0 }),
       });
 
       const data = await response.json();
@@ -150,7 +150,7 @@ export default function InstructorPage() {
       const response = await fetch(`/api/courses/${editingCourse.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, is_paid: false, price: 0 }),
       });
 
       const data = await response.json();
@@ -363,14 +363,14 @@ export default function InstructorPage() {
                     <div className="flex md:flex-col items-center justify-end gap-3 flex-shrink-0 w-full md:w-auto mt-6 md:mt-0 pt-6 md:pt-0 border-t-2 md:border-t-0 border-black border-dashed">
                       <Link
                         href={`/instructor/courses/${course.id}`}
-                        className="w-full md:w-auto action-manage shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                        className="w-full md:w-32 action-manage justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         Manage
                       </Link>
                       <button
                         onClick={() => handleEditCourse(course)}
-                        className="w-full md:w-auto action-edit shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                        className="w-full md:w-32 action-edit justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         Edit
@@ -401,13 +401,7 @@ export default function InstructorPage() {
                 <label htmlFor="description" className="block text-xs font-mono font-bold uppercase tracking-widest text-black mb-2">Description</label>
                 <textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={4} className="input w-full" />
               </div>
-              <div className="flex items-center gap-3 bg-slate-50 border-2 border-black p-4">
-                <input type="checkbox" id="is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-5 w-5 bg-white border-2 border-black text-black focus:ring-0 focus:ring-offset-0 rounded-none cursor-pointer" />
-                <label htmlFor="is_paid" className="text-sm font-mono font-bold uppercase tracking-widest text-black cursor-pointer">Paid course</label>
-              </div>
-              {formData.is_paid && (
-                <FormInput id="price" name="price" label="PRICE (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
-              )}
+
               <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 mt-8 border-t-2 border-black">
                 <button type="button" onClick={() => setShowCreateModal(false)} className="w-full sm:w-auto px-8 py-4 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors">Cancel</button>
                 <button type="submit" disabled={creating} className="w-full sm:w-auto px-8 py-4 bg-secondary-400 text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none disabled:opacity-50">{creating ? 'CREATING...' : 'CREATE COURSE'}</button>
@@ -434,13 +428,7 @@ export default function InstructorPage() {
                 <label htmlFor="edit_description" className="block text-xs font-mono font-bold uppercase tracking-widest text-black mb-2">Description</label>
                 <textarea id="edit_description" name="description" value={formData.description} onChange={handleChange} rows={4} className="input w-full" />
               </div>
-              <div className="flex items-center gap-3 bg-slate-50 border-2 border-black p-4">
-                <input type="checkbox" id="edit_is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-5 w-5 bg-white border-2 border-black text-black focus:ring-0 focus:ring-offset-0 rounded-none cursor-pointer" />
-                <label htmlFor="edit_is_paid" className="text-sm font-mono font-bold uppercase tracking-widest text-black cursor-pointer">Paid course</label>
-              </div>
-              {formData.is_paid && (
-                <FormInput id="edit_price" name="price" label="PRICE (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
-              )}
+
               <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 mt-8 border-t-2 border-black">
                 <button type="button" onClick={() => setShowEditModal(false)} className="action-cancel w-full sm:w-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none">Cancel</button>
                 <button type="submit" disabled={saving} className="action-save w-full sm:w-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none disabled:opacity-50">{saving ? 'SAVING...' : 'SAVE CHANGES'}</button>

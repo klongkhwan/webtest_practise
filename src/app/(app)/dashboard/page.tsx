@@ -193,16 +193,16 @@ function DashboardContent() {
       {/* 3. CONTINUE LEARNING GRID */}
       <section>
         <div className="flex items-baseline justify-between mb-8 border-b-4 border-black pb-2">
-          <h2 className="text-3xl font-serif font-black uppercase tracking-tighter">Current Missions</h2>
+          <h2 className="text-3xl font-serif font-black uppercase tracking-tighter">Current Courses</h2>
           <Link href="/courses" className="font-mono text-[10px] font-black uppercase tracking-widest hover:underline transition-all">
-            View All Marketplace →
+            View All Courses →
           </Link>
         </div>
 
         {activeEnrollments.length === 0 ? (
           <div className="bg-white border-4 border-black p-16 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-slate-500 font-mono text-sm max-w-md mx-auto mb-8 tracking-widest uppercase">
-              You aren't enrolled in any active courses. Launch a new mission today.
+              You aren't enrolled in any active courses.
             </p>
             <Link href="/courses" className="inline-block px-10 py-4 bg-primary-400 border-4 border-black text-black font-mono font-black uppercase text-sm tracking-widest hover:bg-black hover:text-white transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-4px] translate-y-[-4px]">
               Find Course Now
@@ -259,8 +259,8 @@ function DashboardContent() {
       {completedEnrollments.length > 0 && (
         <section className="bg-black text-white p-8 sm:p-12 border-4 border-black">
           <div className="flex items-baseline justify-between mb-12 border-b border-white/20 pb-4">
-            <h2 className="text-3xl font-serif font-black uppercase tracking-tighter italic">Completed Missions</h2>
-            <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Authorized History</span>
+            <h2 className="text-3xl font-serif font-black uppercase tracking-tighter italic">Completed Courses</h2>
+            <span className="font-mono text-[10px] uppercase tracking-widest opacity-50"> History</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -276,7 +276,7 @@ function DashboardContent() {
                       {enrollment.course?.title}
                     </h3>
                     <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 mb-4 font-black">
-                      SUCCESSFULLY DEPLOYED • {new Date(enrollment.completed_at || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      SUCCESSFULLY • {new Date(enrollment.completed_at || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </p>
                     {cert && (
                       <Link

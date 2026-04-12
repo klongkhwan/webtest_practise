@@ -22,7 +22,7 @@ export default function InstructorCoursePage() {
 
   // Course edit form
   const [showCourseModal, setShowCourseModal] = useState(false);
-  const [courseForm, setCourseForm] = useState({ title: '', description: '', status: 'DRAFT' as CourseStatus });
+  const [courseForm, setCourseForm] = useState({ title: '', description: '', is_paid: false, price: 0 });
   const [savingCourse, setSavingCourse] = useState(false);
 
   // Lesson form
@@ -48,7 +48,8 @@ export default function InstructorCoursePage() {
         setCourseForm({
           title: data.course.title,
           description: data.course.description || '',
-          status: data.course.status,
+          is_paid: data.course.is_paid || false,
+          price: data.course.price || 0,
         });
       }
     } catch (error) {
@@ -100,7 +101,7 @@ export default function InstructorCoursePage() {
       const response = await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(courseForm),
+        body: JSON.stringify({ ...courseForm, is_paid: false, price: 0 }),
       });
       if (response.ok) {
         setSnackbar({ message: 'Course updated!', type: 'success' });
@@ -193,22 +194,26 @@ export default function InstructorCoursePage() {
   return (
     <>
     <div className="page-container">
-        {/* NEW REDESIGNED HERO SECTION */}
-        <div className="mb-10 bg-[#004557] rounded-3xl overflow-hidden border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white">
-          <div className="relative p-8 md:p-12">
-            {/* Dynamic Background Element */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-            
-            <div className="relative z-10">
-              <div className="mb-6">
-                <Breadcrumb items={[
-                  { label: 'Instructor Panel', href: '/instructor' },
-                  { label: 'Management', href: '#' },
-                ]} />
-              </div>
+      <div className="mb-6">
+        <Breadcrumb items={[
+          { label: 'Instructor Panel', href: '/instructor' },
+          { label: 'Management', href: '#' },
+        ]} />
+      </div>
 
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      {/* NEW REDESIGNED HERO SECTION */}
+      <div className="mb-10 bg-[#004557] rounded-3xl overflow-hidden border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white">
+        <div className="relative p-8 md:p-12">
+          {/* Dynamic Background Element */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div className="flex-1 min-w-0">
+                  <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight tracking-tight uppercase">
+                    {course?.title || 'Loading Course...'}
+                  </h1>
+
                   <div className="flex items-center gap-3 mb-4">
                     <span className={`px-4 py-1.5 rounded-full text-xs font-bold border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] uppercase tracking-wider ${
                       course?.status === 'PUBLISHED' ? 'bg-green-500 text-white' :
@@ -218,11 +223,11 @@ export default function InstructorCoursePage() {
                       {course?.status || 'Unknown'}
                     </span>
                     <span className="text-white/60 text-sm font-medium">Created on {course ? new Date(course.created_at).toLocaleDateString() : '...'}</span>
+                    <span className="text-white/60 text-sm font-medium">Updated on {course ? new Date(course.updated_at).toLocaleDateString() : '...'}</span>
+
                   </div>
                   
-                  <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight tracking-tight uppercase">
-                    {course?.title || 'Loading Course...'}
-                  </h1>
+              
 
                   <div className="flex flex-wrap gap-8">
                     <div className="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-2xl border border-white/10">
@@ -251,28 +256,15 @@ export default function InstructorCoursePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 flex-shrink-0">
                   <button 
                     onClick={() => setShowCourseModal(true)}
-                    className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#004557] rounded-xl font-bold border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-0"
+                    className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#004557] rounded-xl font-bold border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-0"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit Details
+                    Edit
                   </button>
-                  <Link 
-                    href={`/courses/${courseId}`}
-                    target="_blank"
-                    className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FFDE59] text-black rounded-xl font-bold border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-0"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Preview Page
-                  </Link>
-                </div>
               </div>
             </div>
           </div>
@@ -315,7 +307,7 @@ export default function InstructorCoursePage() {
                 <div key={lesson.id} className="card overflow-hidden hover:shadow-md transition-all duration-200">
                   <div className="p-5 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500">{index + 1}</div>
+                      <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-sm font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex-shrink-0">{index + 1}</div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-slate-900 truncate">{lesson.title}</h3>
                         <div className="flex items-center gap-3 mt-1 text-xs text-slate-400 font-medium">
@@ -337,41 +329,41 @@ export default function InstructorCoursePage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {quizzes.find(q => q.lesson_id === lesson.id) ? (
-                        <Link
-                          href={`/instructor/quiz/${quizzes.find(q => q.lesson_id === lesson.id)!.id}`}
-                          className="action-quiz"
-                          title="Manage Quiz"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                          Manage Quiz
-                        </Link>
-                      ) : (
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {quizzes.find(q => q.lesson_id === lesson.id) ? (
+                          <Link
+                            href={`/instructor/quiz/${quizzes.find(q => q.lesson_id === lesson.id)!.id}`}
+                            className="action-quiz w-32 justify-center"
+                            title="Manage Quiz"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            Manage Quiz
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={() => handleAddQuiz(lesson)}
+                            className="action-quiz w-32 justify-center"
+                            title="Add Quiz"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                            Add Quiz
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleAddQuiz(lesson)}
-                          className="action-quiz"
-                          title="Add Quiz"
+                          onClick={() => handleEditLesson(lesson)}
+                          className="action-edit w-32 justify-center"
                         >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                          Add Quiz
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                          Edit
                         </button>
-                      )}
-                      <button
-                        onClick={() => handleEditLesson(lesson)}
-                        className="action-edit"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(lesson.id)}
-                        className="action-delete"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        Delete
-                      </button>
-                    </div>
+                        <button
+                          onClick={() => setDeleteTarget(lesson.id)}
+                          className="action-delete w-32 justify-center"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          Delete
+                        </button>
+                      </div>
                   </div>
                 </div>
               );
@@ -413,20 +405,7 @@ export default function InstructorCoursePage() {
                   placeholder="Tell students what this course is about..."
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-black uppercase mb-2">Status</label>
-                  <select 
-                    className="input w-full cursor-pointer pr-10"
-                    value={courseForm.status}
-                    onChange={(e) => setCourseForm(prev => ({ ...prev, status: e.target.value as CourseStatus }))}
-                  >
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="PUBLISHED">PUBLISHED</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                  </select>
-                </div>
-              </div>
+
 
               <div className="flex justify-end gap-4 pt-6 mt-6 border-t-4 border-black">
                 <button type="button" onClick={() => setShowCourseModal(false)} className="px-6 py-3 font-bold uppercase underline">Cancel</button>

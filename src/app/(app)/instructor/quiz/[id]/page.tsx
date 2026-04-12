@@ -280,7 +280,7 @@ export default function InstructorQuizPage() {
             <button
               onClick={handleSaveQuiz}
               disabled={savingQuiz || questions.length === 0}
-              className="inline-flex items-center px-6 py-3 bg-black text-white border-2 border-black font-mono text-sm font-bold uppercase tracking-widest transition-all hover:bg-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 bg-[#A3E9FF] text-black border-2 border-black font-mono text-sm font-bold uppercase tracking-widest transition-all hover:bg-[#85e0ff] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {savingQuiz ? 'Saving...' : 'Save Quiz'}
             </button>
@@ -320,9 +320,9 @@ export default function InstructorQuizPage() {
                   onChange={(e) => setQuizForm(prev => ({ ...prev, passing_score: Number(e.target.value) }))}
                 />
                 <div className="flex justify-end gap-4 pt-4 border-t-2 border-black">
-                  <button type="button" onClick={() => setEditingDetails(false)} className="px-6 py-3 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors">Cancel</button>
-                  <button type="button" onClick={handleSaveDetails} disabled={savingQuiz} className="px-6 py-3 bg-black text-white border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none min-w-[120px]">
-                    {savingQuiz ? 'Saving...' : 'Save'}
+                  <button type="button" onClick={() => setEditingDetails(false)} className="action-cancel">Cancel</button>
+                  <button type="button" onClick={handleSaveDetails} disabled={savingQuiz} className="action-save">
+                    {savingQuiz ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </div>
@@ -336,11 +336,8 @@ export default function InstructorQuizPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-slate-500">Questions:</span>
                     <span className="text-black text-lg bg-secondary-400 px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{questions.length}</span>
-                  </div>
-                  <span className={`ml-auto px-4 py-1.5 border-2 border-black text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${quiz.is_published ? 'bg-accent-400 text-black' : 'bg-white text-black'}`}>
-                    {quiz.is_published ? 'Published' : 'Draft'}
-                  </span>
-                  <button onClick={openEditDetails} className="inline-flex items-center gap-2 px-4 py-1.5 border-2 border-black bg-white hover:bg-secondary-400 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none text-xs ml-2">
+                  </div>                  
+                  <button onClick={openEditDetails} className="action-edit ml-auto">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                   </button>
@@ -379,7 +376,7 @@ export default function InstructorQuizPage() {
                         <div
                           key={choice.id}
                           className={`flex items-center gap-4 px-5 py-3 border-2 transition-colors ${
-                            choice.is_correct ? 'border-black bg-accent-400 text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'border-black bg-white text-black hover:bg-slate-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]'
+                            choice.is_correct ? 'border-black bg-green-400 text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'border-black bg-white text-black hover:bg-slate-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]'
                           }`}
                         >
                           <div className={`w-6 h-6 border-2 flex items-center justify-center shrink-0 ${
@@ -401,17 +398,17 @@ export default function InstructorQuizPage() {
                   <div className="flex md:flex-col items-center gap-3 shrink-0">
                     <button
                       onClick={() => handleEditQuestion(q)}
-                      className="inline-flex items-center justify-center p-3 border-2 border-black bg-white text-black hover:bg-secondary-400 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                      title="Edit"
+                      className="action-edit w-32 justify-center"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      Edit
                     </button>
                     <button
                       onClick={() => setDeleteTarget(q.id)}
-                      className="inline-flex items-center justify-center p-3 border-2 border-black bg-white text-black hover:bg-red-500 hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                      title="Delete"
+                      className="action-delete w-32 justify-center"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -462,7 +459,7 @@ export default function InstructorQuizPage() {
                       <button
                         type="button"
                         onClick={() => handleChoiceChange(index, 'is_correct', true)}
-                        className={`w-8 h-8 shrink-0 flex items-center justify-center border-2 border-black transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none ${choice.is_correct ? 'bg-accent-400' : 'bg-white'}`}
+                        className={`w-8 h-8 shrink-0 flex items-center justify-center border-2 border-black transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none ${choice.is_correct ? 'bg-green-400' : 'bg-white'}`}
                       >
                         {choice.is_correct && <div className="w-4 h-4 bg-black" />}
                       </button>
@@ -471,7 +468,7 @@ export default function InstructorQuizPage() {
                         value={choice.text}
                         onChange={(e) => handleChoiceChange(index, 'text', e.target.value)}
                         placeholder={`Choice ${index + 1}`}
-                        className="w-full border-2 border-black p-3 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
+                        className={`w-full border-2 border-black p-3 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow ${choice.is_correct ? 'bg-green-50' : 'bg-white'}`}
                       />
                       {choices.length > 2 && (
                         <button
@@ -524,8 +521,8 @@ export default function InstructorQuizPage() {
               />
 
               <div className="flex justify-end gap-4 pt-6 border-t-4 border-black">
-                <button type="button" onClick={() => setShowQuestionModal(false)} className="px-6 py-4 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest transition-all hover:bg-slate-100 min-w-[120px]">Cancel</button>
-                <button type="submit" disabled={savingQuestion} className="px-6 py-4 bg-black text-white border-2 border-black font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none min-w-[160px] disabled:opacity-50">
+                <button type="button" onClick={() => setShowQuestionModal(false)} className="action-cancel">Cancel</button>
+                <button type="submit" disabled={savingQuestion} className="action-save">
                   {savingQuestion ? 'Saving...' : editingQuestion ? 'Update Question' : 'Add Question'}
                 </button>
               </div>

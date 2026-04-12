@@ -171,7 +171,7 @@ export default function ProfilePage() {
                           #{cert.certificate_number}
                         </p>
                         <p className="font-mono text-xs text-slate-500 uppercase tracking-wider">
-                          Finish Date {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                          Successfully {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
                         </p>
                       </div>
                     </div>

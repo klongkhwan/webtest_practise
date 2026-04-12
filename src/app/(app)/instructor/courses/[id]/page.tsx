@@ -9,7 +9,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Snackbar } from '@/components/Snackbar';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { useLayoutUser } from '@/components/AppLayout';
-import type { Course, Lesson, Quiz } from '@/types/database';
+import type { Course, Lesson, Quiz, CourseStatus } from '@/types/database';
 
 export default function InstructorCoursePage() {
   const params = useParams();

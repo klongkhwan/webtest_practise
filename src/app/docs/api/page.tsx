@@ -9,6 +9,9 @@ interface Endpoint {
   method: HttpMethod;
   path: string;
   description: string;
+  params?: { name: string; type: string; required: boolean; description: string }[];
+  payload?: any;
+  response?: any;
 }
 
 interface ApiCategory {
@@ -24,10 +27,25 @@ const apiCategories: ApiCategory[] = [
     emoji: '🔐',
     description: 'User registration, login, logout and session management.',
     endpoints: [
-      { method: 'POST', path: '/api/auth/register', description: 'Register a new user account with email, password, full_name, and optional role' },
-      { method: 'POST', path: '/api/auth/login', description: 'Authenticate user with email and password, creates a session' },
-      { method: 'POST', path: '/api/auth/logout', description: 'Sign out and destroy the current session' },
-      { method: 'GET', path: '/api/auth/me', description: 'Get the currently authenticated user profile and role' },
+      { 
+        method: 'POST', 
+        path: '/api/auth/register', 
+        description: 'Register a new user account profile in the database.',
+        payload: {
+          auth_id: "string (from supabase.auth)",
+          email: "user@example.com",
+          full_name: "John Doe",
+          phone: "+66812345678 (optional)",
+          role: "STUDENT | INSTRUCTOR | ADMIN"
+        },
+        response: { message: "Registration successful", user: { id: "...", email: "..." } }
+      },
+      { 
+        method: 'GET', 
+        path: '/api/auth/me', 
+        description: 'Get the currently authenticated user profile.',
+        response: { user: { id: "...", role: "STUDENT", full_name: "..." } }
+      },
     ],
   },
   {
@@ -35,11 +53,35 @@ const apiCategories: ApiCategory[] = [
     emoji: '📚',
     description: 'CRUD operations for courses (admin/instructor) and public listing.',
     endpoints: [
-      { method: 'GET', path: '/api/courses', description: 'List all published courses with optional search query (?search=keyword)' },
-      { method: 'POST', path: '/api/courses', description: 'Create a new course (admin/instructor only) with title, description, thumbnail' },
-      { method: 'GET', path: '/api/courses/[id]', description: 'Get detailed information about a specific course by ID' },
-      { method: 'PATCH', path: '/api/courses/[id]', description: 'Update course details such as title, description, status (admin/instructor only)' },
-      { method: 'DELETE', path: '/api/courses/[id]', description: 'Delete a course and all associated lessons/enrollments (admin only)' },
+      { 
+        method: 'GET', 
+        path: '/api/courses', 
+        description: 'List all published courses with pagination and search.',
+        params: [
+          { name: 'search', type: 'string', required: false, description: 'Search title for keyword' },
+          { name: 'status', type: 'string', required: false, description: 'PUBLISHED (default), DRAFT, ARCHIVED' },
+          { name: 'limit', type: 'number', required: false, description: 'Number of items to return' },
+          { name: 'offset', type: 'number', required: false, description: 'Number of items to skip' }
+        ],
+        response: { courses: [ { id: '...', title: '...' } ] }
+      },
+      { 
+        method: 'POST', 
+        path: '/api/courses', 
+        description: 'Create a new course (Instructor/Admin only).',
+        payload: {
+          title: "Course title (min 3 chars)",
+          description: "Course description (optional)",
+          is_paid: "boolean",
+          price: "number"
+        }
+      },
+      { 
+        method: 'GET', 
+        path: '/api/courses/[id]', 
+        description: 'Get detailed information about a specific course.',
+        response: { id: "...", title: "...", lessons: ["..."], instructor: { name: "..." } }
+      },
     ],
   },
   {
@@ -47,11 +89,26 @@ const apiCategories: ApiCategory[] = [
     emoji: '🎬',
     description: 'Manage lessons within a course. Supports ordering and video content.',
     endpoints: [
-      { method: 'GET', path: '/api/lessons', description: 'List all lessons for a specific course (?courseId=xxx)' },
-      { method: 'POST', path: '/api/lessons', description: 'Create a new lesson with title, content, video_url, order_index, and course_id' },
+      { 
+        method: 'GET', 
+        path: '/api/lessons', 
+        description: 'List all lessons for a specific course.',
+        params: [{ name: 'courseId', type: 'UUID', required: true, description: 'Filter by course' }]
+      },
+      { 
+        method: 'POST', 
+        path: '/api/lessons', 
+        description: 'Create a new lesson (Instructor/Admin only).',
+        payload: {
+          course_id: "UUID",
+          title: "Lesson title",
+          content: "Markdown content",
+          video_url: "URL (optional)",
+          is_free: "boolean",
+          duration_minutes: "number"
+        }
+      },
       { method: 'GET', path: '/api/lessons/[id]', description: 'Get a single lesson by its ID including content and video' },
-      { method: 'PATCH', path: '/api/lessons/[id]', description: 'Update lesson content, title, video URL, or order index' },
-      { method: 'DELETE', path: '/api/lessons/[id]', description: 'Delete a lesson from the course' },
     ],
   },
   {
@@ -59,18 +116,24 @@ const apiCategories: ApiCategory[] = [
     emoji: '✋',
     description: 'Manage student enrollments into courses.',
     endpoints: [
-      { method: 'GET', path: '/api/enrollments', description: 'List all enrollments for the authenticated user' },
-      { method: 'POST', path: '/api/enrollments', description: 'Enroll the current user in a course by providing course_id' },
-      { method: 'DELETE', path: '/api/enrollments', description: 'Unenroll the current user from a course (?courseId=xxx)' },
-    ],
-  },
-  {
-    name: 'Progress',
-    emoji: '📊',
-    description: 'Track and update lesson completion and course progress.',
-    endpoints: [
-      { method: 'GET', path: '/api/progress/[courseId]', description: 'Get lesson completion progress for a specific course (authenticated user)' },
-      { method: 'POST', path: '/api/progress', description: 'Mark a lesson as completed by providing lesson_id and course_id' },
+      { 
+        method: 'POST', 
+        path: '/api/enrollments', 
+        description: 'Enroll the current user in a course.',
+        payload: { course_id: "UUID" }
+      },
+      { 
+        method: 'GET', 
+        path: '/api/progress/[courseId]', 
+        description: 'Get lesson completion progress for a specific course.',
+        response: { completed_lesson_ids: ["UUID", "..."], percentage: 45 }
+      },
+      { 
+        method: 'POST', 
+        path: '/api/progress', 
+        description: 'Mark a lesson as completed.',
+        payload: { lesson_id: "UUID", course_id: "UUID" }
+      },
     ],
   },
   {
@@ -78,42 +141,59 @@ const apiCategories: ApiCategory[] = [
     emoji: '❓',
     description: 'CRUD for quizzes (per-lesson), including scoring configuration.',
     endpoints: [
-      { method: 'GET', path: '/api/quizzes', description: 'List all quizzes for a given lesson (?lessonId=xxx)' },
-      { method: 'POST', path: '/api/quizzes', description: 'Create a new quiz for a lesson with title and passing_score' },
-      { method: 'GET', path: '/api/quizzes/[id]', description: 'Get quiz details including its questions' },
-      { method: 'PATCH', path: '/api/quizzes/[id]', description: 'Update quiz title or passing score' },
-      { method: 'DELETE', path: '/api/quizzes/[id]', description: 'Delete a quiz and all its questions' },
-      { method: 'POST', path: '/api/quizzes/submit', description: 'Submit quiz answers and receive the score/result' },
+      { 
+        method: 'GET', 
+        path: '/api/quizzes', 
+        description: 'List all quizzes for a given lesson.',
+        params: [{ name: 'lessonId', type: 'UUID', required: true, description: 'Filter by lesson' }]
+      },
+      { 
+        method: 'POST', 
+        path: '/api/quiz/submit', 
+        description: 'Submit quiz answers and receive scoring.',
+        payload: {
+          quiz_id: "UUID",
+          answers: [
+            { question_id: "UUID", selected_choice_id: "UUID" }
+          ]
+        },
+        response: { score: 85, passed: true, total_questions: 10, correct_answers: 8 }
+      },
+      { 
+        method: 'GET', 
+        path: '/api/quizzes/[id]', 
+        description: 'Get quiz details including questions and choices.',
+        response: { id: "...", title: "...", questions: [ { id: "...", text: "...", choices: ["..."] } ] }
+      },
+      { 
+        method: 'POST', 
+        path: '/api/certificates', 
+        description: 'Issue a certificate for a completed course.',
+        payload: { course_id: "UUID" },
+        response: { id: "...", certificate_url: "..." }
+      },
     ],
   },
   {
-    name: 'Questions',
-    emoji: '💬',
-    description: 'Manage quiz questions and their answer choices.',
+    name: 'Administrative',
+    emoji: '⚙️',
+    description: 'User and system management (Admin only).',
     endpoints: [
-      { method: 'GET', path: '/api/questions', description: 'List all questions for a given quiz (?quizId=xxx)' },
-      { method: 'POST', path: '/api/questions', description: 'Create a new question with text, choices array, and correct_answer index' },
-      { method: 'PATCH', path: '/api/questions/[id]', description: 'Update question text, choices, or correct answer' },
-      { method: 'DELETE', path: '/api/questions/[id]', description: 'Delete a specific question from a quiz' },
-    ],
-  },
-  {
-    name: 'Users',
-    emoji: '👤',
-    description: 'User management for admins — list, update roles, delete accounts.',
-    endpoints: [
-      { method: 'GET', path: '/api/users', description: 'List all users with search and role filter (admin only)' },
-      { method: 'PATCH', path: '/api/users/[id]', description: 'Update a user role (admin only)' },
-      { method: 'DELETE', path: '/api/users/[id]', description: 'Delete a user account (admin only)' },
-    ],
-  },
-  {
-    name: 'Certificates',
-    emoji: '🏆',
-    description: 'Issue and retrieve certificates upon course completion.',
-    endpoints: [
-      { method: 'GET', path: '/api/certificates', description: 'List all certificates earned by the authenticated user' },
-      { method: 'POST', path: '/api/certificates', description: 'Issue a certificate for a completed course (requires 100% progress)' },
+      { 
+        method: 'GET', 
+        path: '/api/users', 
+        description: 'List all users with search and filter.',
+        params: [
+          { name: 'role', type: 'string', required: false, description: 'STUDENT, INSTRUCTOR, ADMIN' },
+          { name: 'search', type: 'string', required: false, description: 'Search name or email' }
+        ]
+      },
+      { 
+        method: 'PATCH', 
+        path: '/api/users/[id]', 
+        description: 'Update user role.',
+        payload: { role: "ADMIN | INSTRUCTOR | STUDENT" }
+      },
     ],
   },
 ];
@@ -127,7 +207,7 @@ const methodColors: Record<HttpMethod, { bg: string; text: string; ring: string 
 };
 
 export default function ApiDocsPage() {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   const totalEndpoints = apiCategories.reduce((sum, cat) => sum + cat.endpoints.length, 0);
@@ -145,6 +225,10 @@ export default function ApiDocsPage() {
         filtered.length > 0 ||
         cat.name.toLowerCase().includes(searchQuery.toLowerCase())
       ) {
+        // Auto-expand if there's a match
+        if (searchQuery && !expandedCategories.includes(cat.name)) {
+          setExpandedCategories(prev => [...prev, cat.name]);
+        }
         return { ...cat, endpoints: filtered.length > 0 ? filtered : cat.endpoints };
       }
       return null;
@@ -152,23 +236,25 @@ export default function ApiDocsPage() {
     .filter(Boolean) as ApiCategory[];
 
   const toggleCategory = (name: string) => {
-    setActiveCategory(activeCategory === name ? null : name);
+    setExpandedCategories(prev => 
+      prev.includes(name) ? prev.filter(c => c !== name) : [...prev, name]
+    );
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass">
+      <nav className="fixed top-0 w-full z-50 bg-[#F9F8F6]/90 backdrop-blur-md border-b-4 border-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold bg-gradient-to-r from-secondary-700 to-cyan-600 bg-clip-text text-transparent">
-            LMS Platform
+          <Link href="/" className="text-2xl font-serif font-black uppercase tracking-tighter text-black">
+            LMS<span className="text-[#0091B4]">.</span>Platform
           </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/" className="btn-ghost text-sm">
-              ← Home
+          <div className="flex items-center gap-4">
+            <Link href="/" className="font-mono text-xs uppercase font-bold hover:underline">
+              ← Back
             </Link>
-            <Link href="/login" className="btn-primary text-sm">
-              Get Started
+            <Link href="/login" className="btn-primary !py-2 !px-4 text-[10px]">
+              Sign In
             </Link>
           </div>
         </div>
@@ -181,34 +267,29 @@ export default function ApiDocsPage() {
 
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-10">
-            <p className="text-sm font-semibold text-secondary-600 tracking-widest uppercase mb-4">REST API Reference</p>
-            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
-              API{' '}
-              <span className="bg-gradient-to-r from-secondary-700 to-cyan-600 bg-clip-text text-transparent">Documentation</span>
+            <p className="text-sm font-bold font-mono text-secondary-600 tracking-[0.3em] uppercase mb-4">REST API Reference</p>
+            <h1 className="text-5xl sm:text-7xl font-serif font-black text-black mb-6 uppercase tracking-tight leading-none">
+              API Documentation
             </h1>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto font-mono">
               Comprehensive reference for all REST API endpoints available in the LMS platform.
-              All endpoints use JSON and require appropriate authentication.
+              All endpoints use JSON and require Supabase session authentication.
             </p>
           </div>
 
           {/* Quick Stats */}
-          <div className="flex flex-wrap justify-center gap-4 mb-10">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100 shadow-sm">
-              <span className="text-lg font-bold text-secondary-700">{apiCategories.length}</span>
-              <span className="text-sm text-slate-500">Categories</span>
+          <div className="flex flex-wrap justify-center gap-6 mb-12">
+            <div className="flex flex-col items-center justify-center w-32 h-32 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-3xl font-serif font-black">{apiCategories.length}</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 mt-1">Modules</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100 shadow-sm">
-              <span className="text-lg font-bold text-emerald-600">{totalEndpoints}</span>
-              <span className="text-sm text-slate-500">Endpoints</span>
+            <div className="flex flex-col items-center justify-center w-32 h-32 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-3xl font-serif font-black">{totalEndpoints}</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 mt-1">Routes</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100 shadow-sm">
-              <span className="text-lg font-bold text-violet-600">REST</span>
-              <span className="text-sm text-slate-500">Architecture</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100 shadow-sm">
-              <span className="text-lg font-bold text-amber-600">JSON</span>
-              <span className="text-sm text-slate-500">Format</span>
+            <div className="flex flex-col items-center justify-center w-32 h-32 bg-[#10b981] text-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-3xl font-serif font-black">1.0</span>
+              <span className="text-[10px] font-mono uppercase text-white/70 mt-1">Version</span>
             </div>
           </div>
 
@@ -226,26 +307,29 @@ export default function ApiDocsPage() {
       </section>
 
       {/* Base URL Notice */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-8">
+      <section className="px-4 sm:px-6 lg:px-8 pb-12">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 font-mono text-sm shadow-lg">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-3 h-3 rounded-full bg-red-400/80" />
-              <div className="w-3 h-3 rounded-full bg-amber-400/80" />
-              <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
-              <span className="text-slate-500 text-xs ml-2">base url</span>
+          <div className="bg-white border-4 border-black p-8 font-mono text-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-2 mb-6 border-b-2 border-slate-100 pb-4">
+              <div className="w-4 h-4 bg-red-500 border-2 border-black" />
+              <div className="w-4 h-4 bg-yellow-400 border-2 border-black" />
+              <div className="w-4 h-4 bg-green-500 border-2 border-black" />
+              <span className="text-black font-black uppercase text-xs ml-2 tracking-tighter">System Configuration</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-emerald-400">Base URL:</span>
-              <span className="text-cyan-300">https://your-domain.com</span>
-            </div>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-amber-400">Auth:</span>
-              <span className="text-slate-400">Supabase session cookie-based authentication</span>
-            </div>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-violet-400">Format:</span>
-              <span className="text-slate-400">Content-Type: application/json</span>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="space-y-1">
+                <span className="text-slate-400 uppercase text-[10px] font-black">Base URL</span>
+                <p className="text-black font-bold text-lg break-all">https://api.your-platform.com</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-slate-400 uppercase text-[10px] font-black">Authentication</span>
+                <p className="text-black font-bold">Supabase Auth (JWT)</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-slate-400 uppercase text-[10px] font-black">Response Format</span>
+                <p className="text-black font-bold">application/json</p>
+              </div>
             </div>
           </div>
         </div>
@@ -253,56 +337,120 @@ export default function ApiDocsPage() {
 
       {/* API Categories */}
       <section className="px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="max-w-7xl mx-auto space-y-4">
+        <div className="max-w-7xl mx-auto space-y-8">
           {filteredCategories.map((category) => {
-            const isOpen = activeCategory === category.name;
+            const isExpanded = expandedCategories.includes(category.name);
             return (
-              <div key={category.name} className="premium-card overflow-hidden">
-                {/* Category Header */}
-                <button
+              <div key={category.name} id={category.name.toLowerCase()} className="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+                <button 
                   onClick={() => toggleCategory(category.name)}
-                  className="w-full p-5 flex items-center gap-4 text-left hover:bg-slate-50/50 transition-colors"
+                  className="w-full flex items-center justify-between p-6 bg-white hover:bg-slate-50 transition-colors border-b-4 border-black group"
                 >
-                  <span className="text-2xl flex-shrink-0">{category.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-0.5">
-                      <h3 className="text-lg font-bold text-slate-900">{category.name}</h3>
-                      <span className="badge-gray">{category.endpoints.length}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{category.emoji}</span>
+                    <div className="text-left">
+                      <h2 className="text-2xl font-serif font-black uppercase tracking-tight group-hover:text-secondary-600 transition-colors">
+                        {category.name}
+                      </h2>
+                      <p className="text-slate-500 font-mono text-[10px] uppercase tracking-widest">{category.description}</p>
                     </div>
-                    <p className="text-sm text-slate-500 truncate">{category.description}</p>
                   </div>
-                  <span className={`text-slate-400 transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}>
-                    ▾
-                  </span>
+                  <div className={`text-3xl font-black transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="square" strokeLinejoin="miter">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
                 </button>
 
-                {/* Endpoints List */}
-                {isOpen && (
-                  <div className="border-t border-slate-100">
-                    {category.endpoints.map((endpoint, idx) => {
-                      const color = methodColors[endpoint.method];
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex flex-col sm:flex-row sm:items-center gap-3 px-6 py-4 ${idx < category.endpoints.length - 1 ? 'border-b border-slate-50' : ''} hover:bg-slate-50/30 transition-colors`}
-                        >
-                          <div className="flex items-center gap-3 flex-shrink-0">
-                            <span className={`inline-flex items-center justify-center w-[72px] px-2 py-1 rounded-lg text-xs font-bold ring-1 ${color.bg} ${color.text} ${color.ring}`}>
-                              {endpoint.method}
-                            </span>
-                            <code className="text-sm font-mono text-slate-700 font-semibold">
-                              {endpoint.path}
-                            </code>
+                {isExpanded && (
+                  <div className="p-6 bg-slate-50 space-y-6">
+                    <div className="grid gap-6">
+                      {category.endpoints.map((endpoint, idx) => {
+                        const color = methodColors[endpoint.method];
+                        return (
+                          <div key={idx} className="card bg-white p-0 border-2 border-black overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            {/* Endpoint Header */}
+                            <div className="p-4 border-b-2 border-black flex flex-wrap items-center gap-4 bg-white">
+                              <span className={`${color.bg} ${color.text} px-3 py-1 border-2 border-black font-mono font-black text-xs`}>
+                                {endpoint.method}
+                              </span>
+                              <code className="text-sm font-mono font-bold text-black break-all">
+                                {endpoint.path}
+                              </code>
+                              <div className="sm:ml-auto">
+                                <span className="text-[10px] uppercase font-black text-slate-400">{endpoint.description}</span>
+                              </div>
+                            </div>
+
+                            {/* Endpoint Details */}
+                            <div className="p-6 grid lg:grid-cols-2 gap-8 bg-white border-t-2 border-slate-100">
+                          <div className="space-y-6">
+                            {/* Parameters */}
+                            {endpoint.params && endpoint.params.length > 0 && (
+                              <div>
+                                <h4 className="font-mono text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 bg-blue-500"></span> Query Parameters
+                                </h4>
+                                <div className="space-y-3">
+                                  {endpoint.params.map(p => (
+                                    <div key={p.name} className="flex flex-col border-l-2 border-slate-200 pl-4 py-1">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-mono font-bold text-black">{p.name}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase">{p.type}</span>
+                                        {p.required && <span className="text-[10px] text-red-500 font-bold uppercase">Required</span>}
+                                      </div>
+                                      <span className="text-sm text-slate-500">{p.description}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Request Body */}
+                            {endpoint.payload && (
+                              <div>
+                                <h4 className="font-mono text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 bg-amber-500"></span> Request Body (JSON)
+                                </h4>
+                                <pre className="bg-slate-900 text-slate-300 p-4 font-mono text-xs border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
+                                  {JSON.stringify(endpoint.payload, null, 2)}
+                                </pre>
+                              </div>
+                            )}
                           </div>
-                          <span className="text-sm text-slate-500 sm:ml-auto sm:text-right max-w-md">
-                            {endpoint.description}
-                          </span>
+
+                          <div className="space-y-6">
+                            {/* Example Response */}
+                            {endpoint.response && (
+                              <div>
+                                <h4 className="font-mono text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 bg-emerald-500"></span> Success Response
+                                </h4>
+                                <pre className="bg-emerald-950 text-emerald-400 p-4 font-mono text-xs border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
+                                  {JSON.stringify(endpoint.response, null, 2)}
+                                </pre>
+                              </div>
+                            )}
+
+                            <div>
+                              <h4 className="font-mono text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-slate-400"></span> Auth Required
+                              </h4>
+                              <p className="text-sm text-slate-500 font-mono">
+                                {endpoint.path.includes('/api/auth/register') || endpoint.path.includes('/api/courses') && endpoint.method === 'GET' 
+                                  ? "None (Public)" 
+                                  : "Bearer Token (Supabase Session)"}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
             );
           })}
 
@@ -317,16 +465,21 @@ export default function ApiDocsPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 border-t border-slate-200/50">
+      <footer className="py-12 border-t-4 border-black bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <span className="font-bold text-slate-600">LMS Platform</span>
-            <div className="flex items-center gap-6 text-sm text-slate-400">
-              <Link href="/" className="hover:text-secondary-600 transition-colors">Home</Link>
-              <Link href="/login" className="hover:text-secondary-600 transition-colors">Login</Link>
-              <Link href="/register" className="hover:text-secondary-600 transition-colors">Register</Link>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="space-y-2">
+              <span className="text-2xl font-serif font-black uppercase tracking-tighter">API Reference</span>
+              <p className="text-xs font-mono text-slate-400 uppercase tracking-widest">Internal Documentation v1.0.4</p>
             </div>
-            <p className="text-sm text-slate-400">&copy; 2024 LMS Platform. All rights reserved.</p>
+            <div className="flex flex-wrap gap-8 text-xs font-mono font-bold uppercase">
+              <Link href="/" className="hover:text-secondary-600 underline decoration-2 underline-offset-4">Portal</Link>
+              <Link href="/login" className="hover:text-secondary-600 underline decoration-2 underline-offset-4">Instructor Login</Link>
+              <Link href="/register" className="hover:text-secondary-600 underline decoration-2 underline-offset-4">Student Board</Link>
+            </div>
+            <p className="text-[10px] font-mono text-slate-400 uppercase leading-none">
+              &copy; {new Date().getFullYear()} Brutalist LMS Core. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

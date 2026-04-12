@@ -174,10 +174,10 @@ export default function InstructorPage() {
   const totalStudents = courses.reduce((acc, c) => acc + (c.enrollments_count || 0), 0);
   const totalLessons = courses.reduce((acc, c) => acc + (c.lessons_count || 0), 0);
 
-  const statusConfig: Record<string, { label: string; dot: string; bg: string; text: string; ring: string }> = {
-    PUBLISHED: { label: 'Published', dot: 'bg-emerald-400', bg: 'bg-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-600/20' },
-    DRAFT: { label: 'Draft', dot: 'bg-amber-400', bg: 'bg-amber-50', text: 'text-amber-700', ring: 'ring-amber-600/20' },
-    ARCHIVED: { label: 'Archived', dot: 'bg-slate-400', bg: 'bg-slate-100', text: 'text-slate-600', ring: 'ring-slate-500/20' },
+  const statusConfig: Record<string, { label: string; dot: string; className: string }> = {
+    PUBLISHED: { label: 'Published', dot: 'bg-white', className: 'badge-green' },
+    DRAFT: { label: 'Draft', dot: 'bg-black', className: 'badge-yellow' },
+    ARCHIVED: { label: 'Archived', dot: 'bg-white', className: 'badge-blue' },
   };
 
   const filterTabs: { key: StatusFilter; label: string; count?: number }[] = [
@@ -189,180 +189,170 @@ export default function InstructorPage() {
 
   return (
     <>
-    <div className="page-container">
-      {/* Hero header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-secondary-700 via-secondary-600 to-cyan-600 rounded-2xl p-8 sm:p-10 mb-8">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4" />
-        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-white/5 rounded-full" />
-
-        <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1 mb-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
-              <span className="text-white/90 text-xs font-medium">Instructor Dashboard</span>
+      <div className="page-container">
+        {/* Hero header */}
+        <div className="relative bg-white border-2 border-black p-8 sm:p-10 mb-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 z-10">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-secondary-400 border-2 border-black px-3 py-1 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="w-2 h-2 bg-black animate-pulse" />
+                <span className="text-black font-mono text-[10px] font-bold uppercase tracking-widest">Instructor Dashboard</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl font-serif text-black tracking-tight">My Courses</h1>
+              <p className="mt-4 text-slate-600 font-mono text-sm max-w-md">
+                Create, manage and track your courses all in one place.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">My Courses</h1>
-            <p className="mt-2 text-secondary-100/80 max-w-md text-sm">
-              Create, manage and track your courses all in one place.
-            </p>
-          </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 bg-white text-secondary-700 font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-secondary-900/20 hover:shadow-xl hover:shadow-secondary-900/30 hover:-translate-y-0.5 active:translate-y-0"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-            New Course
-          </button>
-        </div>
-
-      </div>
-
-      {/* Search & Filter bar */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search courses..."
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-secondary-200 focus:border-secondary-300 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => { setSearchQuery(''); fetchCourses(activeFilter, ''); }}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            )}
-          </div>
-
-          {/* Filter tabs */}
-          <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1 border border-slate-100">
-            {filterTabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => handleFilterChange(tab.key)}
-                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
-                  activeFilter === tab.key
-                    ? 'bg-white text-secondary-700 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                {tab.label}
-                {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
-                    activeFilter === tab.key
-                      ? 'bg-secondary-50 text-secondary-700'
-                      : 'bg-slate-200/70 text-slate-500'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex items-center gap-3 bg-secondary-400 text-black font-mono text-xs font-bold uppercase tracking-widest px-8 py-4 transition-all duration-200 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+              New Course
+            </button>
           </div>
         </div>
 
-      </div>
-
-      {/* Loading indicator for search/filter */}
-      {fetching && (
-        <div className="flex items-center justify-center py-4 mb-4">
-          <div className="loader" style={{ width: 32, height: 32 }} />
-        </div>
-      )}
-
-      {/* Course list */}
-      {!fetching && courses.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="p-16 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary-50 to-cyan-50 flex items-center justify-center mx-auto mb-5">
-              <svg className="w-10 h-10 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-            </div>
-            {searchQuery || activeFilter !== 'ALL' ? (
-              <>
-                <p className="text-slate-900 font-semibold text-lg mb-1">No courses found</p>
-                <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
-                  Try adjusting your search or filter to find what you&apos;re looking for.
-                </p>
+        {/* Search & Filter bar */}
+        <div className="bg-white border-2 border-black p-6 mb-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Search */}
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="SEARCH COURSES..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full pl-12 pr-12 py-4 bg-white border-2 border-black rounded-none text-sm font-mono font-bold text-black placeholder-slate-400 focus:outline-none focus:ring-0 focus:border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[1px] hover:translate-x-[1px]"
+              />
+              {searchQuery && (
                 <button
-                  onClick={() => { setSearchQuery(''); setActiveFilter('ALL'); fetchCourses('ALL', ''); }}
-                  className="btn-secondary px-5 text-sm gap-2"
+                  onClick={() => { setSearchQuery(''); fetchCourses(activeFilter, ''); }}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-black hover:text-red-600 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                  Clear filters
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
-              </>
-            ) : (
-              <>
-                <p className="text-slate-900 font-semibold text-lg mb-1">No courses yet</p>
-                <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">Create your first course to start sharing knowledge with students.</p>
-                <button onClick={() => setShowCreateModal(true)} className="btn-primary px-6 text-sm gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                  Create Course
+              )}
+            </div>
+
+            {/* Filter tabs */}
+            <div className="flex flex-wrap items-center gap-3">
+              {filterTabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => handleFilterChange(tab.key)}
+                  className={`relative flex items-center gap-2 px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-all duration-200 border-2 whitespace-nowrap ${activeFilter === tab.key
+                      ? 'bg-secondary-400 text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-x-[-1px] translate-y-[-1px]'
+                      : 'bg-white text-slate-600 border-transparent hover:border-black hover:text-black hover:bg-slate-50'
+                    }`}
+                >
+                  {tab.label}
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 min-w-[24px] text-center border ${activeFilter === tab.key
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white text-black border-black group-hover:border-white'
+                      }`}>
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
-              </>
-            )}
+              ))}
+            </div>
           </div>
+
         </div>
-      ) : (
-        <div className="grid gap-4">
-          {courses.map((course, index) => {
-            const status = statusConfig[course.status] || statusConfig.DRAFT;
-            return (
-              <div
-                key={course.id}
-                className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 hover:border-slate-200 transition-all duration-300 overflow-hidden"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-4">
+
+        {/* Loading indicator for search/filter */}
+        {fetching && (
+          <div className="flex items-center justify-center py-4 mb-4">
+            <div className="loader" style={{ width: 32, height: 32 }} />
+          </div>
+        )}
+
+        {/* Course list */}
+        {!fetching && courses.length === 0 ? (
+          <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="p-16 sm:p-24 text-center">
+              <div className="w-24 h-24 bg-secondary-400 border-2 border-black flex items-center justify-center mx-auto mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <svg className="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+              </div>
+              {searchQuery || activeFilter !== 'ALL' ? (
+                <>
+                  <p className="text-black font-serif text-3xl sm:text-4xl mb-4">No courses found</p>
+                  <p className="text-slate-600 font-mono text-sm mb-8 max-w-md mx-auto">
+                    Try adjusting your search or filter to find what you&apos;re looking for.
+                  </p>
+                  <button
+                    onClick={() => { setSearchQuery(''); setActiveFilter('ALL'); fetchCourses('ALL', ''); }}
+                    className="inline-flex px-8 py-4 bg-white text-black border-2 border-black hover:bg-black hover:text-white font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none translate-x-[-2px] translate-y-[-2px]"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Clear filters
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-black font-serif text-3xl sm:text-4xl mb-4">No courses yet</p>
+                  <p className="text-slate-600 font-mono text-sm mb-8 max-w-sm mx-auto">Create your first course to start sharing knowledge with students.</p>
+                  <button onClick={() => setShowCreateModal(true)} className="inline-flex px-8 py-4 bg-secondary-400 text-black border-2 border-black hover:bg-black hover:text-white font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none translate-x-[-2px] translate-y-[-2px]">
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    Create Course
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-6">
+            {courses.map((course, index) => {
+              const status = statusConfig[course.status] || statusConfig.DRAFT;
+              return (
+                <div
+                  key={course.id}
+                  className="group bg-white border-2 border-black hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="p-6 md:p-8 flex flex-col md:flex-row items-start justify-between gap-6">
                     {/* Course info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                      <div className="flex flex-wrap items-center gap-4 mb-3">
                         <Link
                           href={`/instructor/courses/${course.id}`}
-                          className="text-base font-semibold text-slate-900 hover:text-secondary-600 transition-colors truncate"
+                          className="text-2xl sm:text-3xl font-serif font-bold text-black hover:bg-secondary-400 hover:px-1 transition-all truncate"
                         >
                           {course.title}
                         </Link>
-                        <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ring-1 ${status.bg} ${status.text} ${status.ring}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                        <span className={`inline-flex items-center gap-2 text-[10px] uppercase font-mono font-bold px-3 py-1 border-2 border-black ${status.className}`}>
+                          <span className={`w-2 h-2 ${status.dot} border border-black/20`} />
                           {status.label}
                         </span>
                       </div>
                       {course.description && (
-                        <p className="text-sm text-slate-400 line-clamp-1 mb-3">{course.description}</p>
+                        <p className="text-sm font-mono text-slate-600 line-clamp-2 mb-6">{course.description}</p>
                       )}
 
                       {/* Meta row */}
-                      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-slate-400">
-                        <span className="inline-flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                          <span className="font-medium text-slate-500">{course.lessons_count ?? 0}</span> lessons
+                      <div className="flex flex-wrap items-center gap-x-8 gap-y-4 text-xs font-mono font-bold uppercase tracking-widest text-slate-500">
+                        <span className="inline-flex items-center gap-2">
+                          <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                          <span className="text-black">{course.lessons_count ?? 0}</span> lessons
                         </span>
-                        <span className="inline-flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
-                          <span className="font-medium text-slate-500">{course.enrollments_count ?? 0}</span> students
+                        <span className="inline-flex items-center gap-2">
+                          <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                          <span className="text-black">{course.enrollments_count ?? 0}</span> students
                         </span>
-                        <span className="inline-flex items-center gap-1.5">
+                        <span className="inline-flex items-center gap-2">
                           {course.is_paid ? (
                             <>
-                              <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                              <span className="font-semibold text-slate-600">${course.price}</span>
+                              <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              <span className="text-black">${course.price}</span>
                             </>
                           ) : (
                             <>
-                              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                              <span className="font-medium text-emerald-600">Free</span>
+                              <span className="px-2 py-0.5 bg-black text-white text-[10px]">FREE</span>
                             </>
                           )}
                         </span>
@@ -370,102 +360,101 @@ export default function InstructorPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="flex md:flex-col items-center justify-end gap-3 flex-shrink-0 w-full md:w-auto mt-6 md:mt-0 pt-6 md:pt-0 border-t-2 md:border-t-0 border-black border-dashed">
                       <Link
                         href={`/instructor/courses/${course.id}`}
-                        className="action-view"
+                        className="w-full md:w-auto action-manage shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        View
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        Manage
                       </Link>
                       <button
                         onClick={() => handleEditCourse(course)}
-                        className="action-edit"
+                        className="w-full md:w-auto action-edit shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         Edit
                       </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-    {/* Create Course Modal */}
-    {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Create Course Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="modal-backdrop" onClick={() => setShowCreateModal(false)} />
-          <div className="modal-content">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-slate-900">New Course</h2>
-              <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          <div className="modal-content shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-black">
+              <h2 className="text-3xl font-serif text-black">New Course</h2>
+              <button onClick={() => setShowCreateModal(false)} className="w-10 h-10 border-2 border-transparent hover:border-black bg-white hover:bg-secondary-400 flex items-center justify-center transition-colors">
+                <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            <form onSubmit={handleCreateCourse} className="space-y-5">
-              <FormInput id="title" name="title" label="Course Title" type="text" value={formData.title} onChange={handleChange} error={fieldErrors.title} required />
+            <form onSubmit={handleCreateCourse} className="space-y-6">
+              <FormInput id="title" name="title" label="COURSE TITLE" type="text" value={formData.title} onChange={handleChange} error={fieldErrors.title} required />
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
-                <textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={3} className="input w-full" />
+                <label htmlFor="description" className="block text-xs font-mono font-bold uppercase tracking-widest text-black mb-2">Description</label>
+                <textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={4} className="input w-full" />
               </div>
-              <div className="flex items-center gap-3">
-                <input type="checkbox" id="is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-4 w-4 text-secondary-600 focus:ring-secondary-500 border-slate-300 rounded" />
-                <label htmlFor="is_paid" className="text-sm text-slate-700 font-medium">Paid course</label>
+              <div className="flex items-center gap-3 bg-slate-50 border-2 border-black p-4">
+                <input type="checkbox" id="is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-5 w-5 bg-white border-2 border-black text-black focus:ring-0 focus:ring-offset-0 rounded-none cursor-pointer" />
+                <label htmlFor="is_paid" className="text-sm font-mono font-bold uppercase tracking-widest text-black cursor-pointer">Paid course</label>
               </div>
               {formData.is_paid && (
-                <FormInput id="price" name="price" label="Price (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
+                <FormInput id="price" name="price" label="PRICE (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
               )}
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="btn-ghost py-2 px-4 text-sm">Cancel</button>
-                <button type="submit" disabled={creating} className="btn-primary py-2 px-5 text-sm">{creating ? 'Creating...' : 'Create'}</button>
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 mt-8 border-t-2 border-black">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="w-full sm:w-auto px-8 py-4 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors">Cancel</button>
+                <button type="submit" disabled={creating} className="w-full sm:w-auto px-8 py-4 bg-secondary-400 text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none disabled:opacity-50">{creating ? 'CREATING...' : 'CREATE COURSE'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-    {/* Edit Course Modal */}
-    {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Edit Course Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="modal-backdrop" onClick={() => setShowEditModal(false)} />
-          <div className="modal-content">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-slate-900">Edit Course</h2>
-              <button onClick={() => setShowEditModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          <div className="modal-content shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-black">
+              <h2 className="text-3xl font-serif text-black">Edit Course</h2>
+              <button onClick={() => setShowEditModal(false)} className="w-10 h-10 border-2 border-transparent hover:border-black bg-white hover:bg-secondary-400 flex items-center justify-center transition-colors">
+                <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            <form onSubmit={handleUpdateCourse} className="space-y-5">
-              <FormInput id="edit_title" name="title" label="Course Title" type="text" value={formData.title} onChange={handleChange} error={fieldErrors.title} required />
+            <form onSubmit={handleUpdateCourse} className="space-y-6">
+              <FormInput id="edit_title" name="title" label="COURSE TITLE" type="text" value={formData.title} onChange={handleChange} error={fieldErrors.title} required />
               <div>
-                <label htmlFor="edit_description" className="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
-                <textarea id="edit_description" name="description" value={formData.description} onChange={handleChange} rows={3} className="input w-full" />
+                <label htmlFor="edit_description" className="block text-xs font-mono font-bold uppercase tracking-widest text-black mb-2">Description</label>
+                <textarea id="edit_description" name="description" value={formData.description} onChange={handleChange} rows={4} className="input w-full" />
               </div>
-              <div className="flex items-center gap-3">
-                <input type="checkbox" id="edit_is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-4 w-4 text-secondary-600 focus:ring-secondary-500 border-slate-300 rounded" />
-                <label htmlFor="edit_is_paid" className="text-sm text-slate-700 font-medium">Paid course</label>
+              <div className="flex items-center gap-3 bg-slate-50 border-2 border-black p-4">
+                <input type="checkbox" id="edit_is_paid" name="is_paid" checked={formData.is_paid} onChange={handleChange} className="h-5 w-5 bg-white border-2 border-black text-black focus:ring-0 focus:ring-offset-0 rounded-none cursor-pointer" />
+                <label htmlFor="edit_is_paid" className="text-sm font-mono font-bold uppercase tracking-widest text-black cursor-pointer">Paid course</label>
               </div>
               {formData.is_paid && (
-                <FormInput id="edit_price" name="price" label="Price (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
+                <FormInput id="edit_price" name="price" label="PRICE (USD)" type="number" value={formData.price.toString()} onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))} error={fieldErrors.price} required />
               )}
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setShowEditModal(false)} className="btn-ghost py-2 px-4 text-sm">Cancel</button>
-                <button type="submit" disabled={saving} className="btn-primary py-2 px-5 text-sm">{saving ? 'Saving...' : 'Save'}</button>
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 mt-8 border-t-2 border-black">
+                <button type="button" onClick={() => setShowEditModal(false)} className="action-cancel w-full sm:w-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none">Cancel</button>
+                <button type="submit" disabled={saving} className="action-save w-full sm:w-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none disabled:opacity-50">{saving ? 'SAVING...' : 'SAVE CHANGES'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-    <Snackbar
-      message={snackbar?.message || ''}
-      type={snackbar?.type || 'success'}
-      onClose={() => setSnackbar(null)}
-    />
+      <Snackbar
+        message={snackbar?.message || ''}
+        type={snackbar?.type || 'success'}
+        onClose={() => setSnackbar(null)}
+      />
     </>
   );
 }

@@ -259,7 +259,7 @@ export default function InstructorQuizPage() {
   return (
     <>
     <div className="page-container max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 border-b-4 border-black pb-6">
           <div className="flex items-center gap-4">
             <div className="min-w-0">
               <Breadcrumb items={[
@@ -267,12 +267,12 @@ export default function InstructorQuizPage() {
                 ...(quiz?.course ? [{ label: quiz.course.title, href: `/instructor/courses/${quiz.course.id}` }] : []),
                 { label: quiz?.title || 'Quiz' },
               ]} />
-              <h1 className="section-title text-xl truncate">{quiz?.title || 'Quiz'}</h1>
+              <h1 className="text-4xl font-serif text-black uppercase tracking-tight mt-2">{quiz?.title || 'Quiz'}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => { setEditingQuestion(null); setQuestionText(''); setExplanation(''); setPoints(1); setChoices([{ text: '', is_correct: false }, { text: '', is_correct: false }, { text: '', is_correct: false }, { text: '', is_correct: false }]); setQuestionErrors({}); setShowQuestionModal(true); }} className="btn-secondary text-sm py-2.5 px-5">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center gap-4">
+            <button onClick={() => { setEditingQuestion(null); setQuestionText(''); setExplanation(''); setPoints(1); setChoices([{ text: '', is_correct: false }, { text: '', is_correct: false }, { text: '', is_correct: false }, { text: '', is_correct: false }]); setQuestionErrors({}); setShowQuestionModal(true); }} className="inline-flex items-center px-6 py-3 bg-white text-black border-2 border-black font-mono text-sm font-bold uppercase tracking-widest transition-all hover:bg-secondary-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none">
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Add Question
@@ -280,7 +280,7 @@ export default function InstructorQuizPage() {
             <button
               onClick={handleSaveQuiz}
               disabled={savingQuiz || questions.length === 0}
-              className="btn-primary text-sm py-2.5 px-5 disabled:opacity-50"
+              className="inline-flex items-center px-6 py-3 bg-black text-white border-2 border-black font-mono text-sm font-bold uppercase tracking-widest transition-all hover:bg-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {savingQuiz ? 'Saving...' : 'Save Quiz'}
             </button>
@@ -289,9 +289,9 @@ export default function InstructorQuizPage() {
 
         {/* Quiz Details */}
         {quiz && (
-          <div className="card p-5 mb-6">
+          <div className="bg-white border-2 border-black p-8 mb-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             {editingDetails ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <FormInput
                   id="quiz_title"
                   name="title"
@@ -302,13 +302,13 @@ export default function InstructorQuizPage() {
                   required
                 />
                 <div>
-                  <label htmlFor="quiz_description" className="block text-sm font-semibold text-slate-700 mb-1.5">Description</label>
+                  <label htmlFor="quiz_description" className="block font-mono text-sm font-bold uppercase tracking-widest text-black mb-2">Description</label>
                   <textarea
                     id="quiz_description"
                     value={quizForm.description}
                     onChange={(e) => setQuizForm(prev => ({ ...prev, description: e.target.value }))}
                     rows={2}
-                    className="input w-full"
+                    className="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                   />
                 </div>
                 <FormInput
@@ -319,34 +319,34 @@ export default function InstructorQuizPage() {
                   value={quizForm.passing_score.toString()}
                   onChange={(e) => setQuizForm(prev => ({ ...prev, passing_score: Number(e.target.value) }))}
                 />
-                <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => setEditingDetails(false)} className="btn-secondary py-2 px-4 text-sm">Cancel</button>
-                  <button type="button" onClick={handleSaveDetails} disabled={savingQuiz} className="btn-primary py-2 px-4 text-sm">
+                <div className="flex justify-end gap-4 pt-4 border-t-2 border-black">
+                  <button type="button" onClick={() => setEditingDetails(false)} className="px-6 py-3 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors">Cancel</button>
+                  <button type="button" onClick={handleSaveDetails} disabled={savingQuiz} className="px-6 py-3 bg-black text-white border-2 border-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none min-w-[120px]">
                     {savingQuiz ? 'Saving...' : 'Save'}
                   </button>
                 </div>
               </div>
             ) : (
               <>
-                <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 font-medium">Pass:</span>
-                    <span className="font-semibold text-slate-800">{quiz.passing_score}%</span>
+                <div className="flex flex-wrap items-center gap-6 font-mono font-bold uppercase tracking-wider text-sm border-b-2 border-black pb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-500">Pass:</span>
+                    <span className="text-black text-lg bg-secondary-400 px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{quiz.passing_score}%</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 font-medium">Questions:</span>
-                    <span className="font-semibold text-slate-800">{questions.length}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-500">Questions:</span>
+                    <span className="text-black text-lg bg-secondary-400 px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{questions.length}</span>
                   </div>
-                  <span className={`ml-auto ${quiz.is_published ? 'badge-green' : 'badge-yellow'}`}>
+                  <span className={`ml-auto px-4 py-1.5 border-2 border-black text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${quiz.is_published ? 'bg-accent-400 text-black' : 'bg-white text-black'}`}>
                     {quiz.is_published ? 'Published' : 'Draft'}
                   </span>
-                  <button onClick={openEditDetails} className="action-edit text-xs ml-1">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  <button onClick={openEditDetails} className="inline-flex items-center gap-2 px-4 py-1.5 border-2 border-black bg-white hover:bg-secondary-400 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none text-xs ml-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                   </button>
                 </div>
                 {quiz.description && (
-                  <p className="mt-3 text-sm text-slate-500 border-t border-slate-100 pt-3">{quiz.description}</p>
+                  <p className="mt-6 text-black font-medium leading-relaxed">{quiz.description}</p>
                 )}
               </>
             )}
@@ -354,61 +354,64 @@ export default function InstructorQuizPage() {
         )}
 
         {questions.length === 0 ? (
-          <div className="card empty-state">
-            <div className="w-20 h-20 rounded-3xl bg-slate-100 flex items-center justify-center mb-5">
-              <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div className="bg-white border-2 border-dashed border-black p-16 text-center">
+            <div className="w-20 h-20 bg-secondary-400 border-2 border-black flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <svg className="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-slate-700 font-semibold text-lg mb-1">No questions yet</p>
-            <p className="text-slate-400 text-sm">Add questions to this quiz</p>
+            <p className="text-black font-serif text-2xl mb-2">No questions yet</p>
+            <p className="text-slate-600 font-mono text-sm uppercase tracking-widest">Add questions to this quiz</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {questions.map((q, index) => (
-              <div key={q.id} className="card p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="badge-blue">Q{index + 1}</span>
-                      <span className="text-xs text-slate-400 font-medium">{q.points} pt</span>
+              <div key={q.id} className="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+                  <div className="flex-1 w-full">
+                    <div className="flex items-center gap-4 border-b-2 border-black pb-4 mb-4">
+                      <span className="inline-block border-2 border-black bg-secondary-400 px-3 py-1 font-mono text-sm font-bold uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Q{index + 1}</span>
+                      <span className="text-sm font-mono font-bold uppercase tracking-widest text-black bg-white border-2 border-black px-2 py-1">{q.points} pt{q.points !== 1 ? 's' : ''}</span>
                     </div>
-                    <p className="font-semibold text-slate-900">{q.question}</p>
-                    <div className="mt-4 space-y-2">
+                    <p className="text-xl font-serif text-black font-bold mb-6">{q.question}</p>
+                    <div className="mt-4 space-y-3">
                       {q.choices?.map((choice: Choice) => (
                         <div
                           key={choice.id}
-                          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-colors ${
-                            choice.is_correct ? 'bg-emerald-50 text-emerald-700 font-semibold ring-1 ring-emerald-600/20' : 'bg-slate-50 text-slate-600'
+                          className={`flex items-center gap-4 px-5 py-3 border-2 transition-colors ${
+                            choice.is_correct ? 'border-black bg-accent-400 text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'border-black bg-white text-black hover:bg-slate-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]'
                           }`}
                         >
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            choice.is_correct ? 'border-emerald-500' : 'border-slate-300'
+                          <div className={`w-6 h-6 border-2 flex items-center justify-center shrink-0 ${
+                            choice.is_correct ? 'border-black bg-white' : 'border-black bg-white'
                           }`}>
-                            {choice.is_correct && <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />}
+                            {choice.is_correct && <div className="w-3 h-3 bg-black" />}
                           </div>
-                          {choice.text}
+                          <span className="font-medium text-lg leading-snug">{choice.text}</span>
                         </div>
                       ))}
                     </div>
                     {q.explanation && (
-                      <p className="mt-3 text-sm text-slate-400 italic">Explanation: {q.explanation}</p>
+                      <div className="mt-6 p-4 border-l-4 border-black bg-secondary-400/20">
+                        <p className="text-sm font-mono text-black font-bold uppercase mb-1 tracking-widest">Explanation</p>
+                        <p className="text-black font-medium">{q.explanation}</p>
+                      </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex md:flex-col items-center gap-3 shrink-0">
                     <button
                       onClick={() => handleEditQuestion(q)}
-                      className="action-edit"
+                      className="inline-flex items-center justify-center p-3 border-2 border-black bg-white text-black hover:bg-secondary-400 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      title="Edit"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                      Edit
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     </button>
                     <button
-                      onClick={() => handleDeleteQuestion(q.id)}
-                      className="action-delete"
+                      onClick={() => setDeleteTarget(q.id)}
+                      className="inline-flex items-center justify-center p-3 border-2 border-black bg-white text-black hover:bg-red-500 hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      title="Delete"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      Delete
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </div>
                 </div>
@@ -420,12 +423,17 @@ export default function InstructorQuizPage() {
       {/* Add Question Modal */}
       {showQuestionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="modal-backdrop" onClick={() => setShowQuestionModal(false)} />
-          <div className="modal-content max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">{editingQuestion ? 'Edit Question' : 'Add Question'}</h2>
-            <form onSubmit={handleSaveQuestion} className="space-y-5">
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" onClick={() => setShowQuestionModal(false)} />
+          <div className="bg-white border-4 border-black p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] relative z-10 animate-fade-in-up">
+            <div className="border-b-4 border-black pb-4 mb-6 flex justify-between items-center">
+              <h2 className="text-3xl font-serif text-black uppercase tracking-tight">{editingQuestion ? 'Edit Question' : 'Add Question'}</h2>
+              <button type="button" onClick={() => setShowQuestionModal(false)} className="w-10 h-10 border-2 border-black flex items-center justify-center bg-white hover:bg-secondary-400 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={handleSaveQuestion} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                <label className="block font-mono text-sm font-bold uppercase tracking-widest text-black mb-2">
                   Question <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -435,42 +443,43 @@ export default function InstructorQuizPage() {
                     if (questionErrors.question) setQuestionErrors(prev => ({ ...prev, question: '' }));
                   }}
                   rows={2}
-                  className="input w-full"
+                  className="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                 />
                 {questionErrors.question && (
-                  <p className="mt-1.5 text-xs text-red-600 font-medium">{questionErrors.question}</p>
+                  <p className="mt-2 font-mono text-xs font-bold uppercase text-white bg-red-600 inline-block px-2 py-1 border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{questionErrors.question}</p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Choices <span className="text-red-500">*</span>
-                  <span className="text-slate-400 font-normal ml-1">(select correct answer)</span>
+              <div className="p-6 border-2 border-black bg-slate-50">
+                <label className="block font-mono text-sm font-bold uppercase tracking-widest text-black mb-4 pb-2 border-b-2 border-black flex items-center gap-2">
+                  Choices
+                  <span className="bg-secondary-400 text-[10px] px-2 py-0.5 border border-black">SELECT CORRECT ANSWER</span>
+                  <span className="text-red-500">*</span>
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {choices.map((choice, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="correct"
-                        checked={choice.is_correct}
-                        onChange={() => handleChoiceChange(index, 'is_correct', true)}
-                        className="h-4 w-4 text-secondary-600 focus:ring-secondary-500"
-                      />
+                    <div key={index} className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleChoiceChange(index, 'is_correct', true)}
+                        className={`w-8 h-8 shrink-0 flex items-center justify-center border-2 border-black transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none ${choice.is_correct ? 'bg-accent-400' : 'bg-white'}`}
+                      >
+                        {choice.is_correct && <div className="w-4 h-4 bg-black" />}
+                      </button>
                       <input
                         type="text"
                         value={choice.text}
                         onChange={(e) => handleChoiceChange(index, 'text', e.target.value)}
                         placeholder={`Choice ${index + 1}`}
-                        className="input flex-1"
+                        className="w-full border-2 border-black p-3 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                       />
                       {choices.length > 2 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveChoice(index)}
-                          className="text-slate-400 hover:text-red-500 transition-colors"
+                          className="w-12 h-12 shrink-0 border-2 border-black bg-white hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
@@ -479,27 +488,29 @@ export default function InstructorQuizPage() {
                   ))}
                 </div>
                 {questionErrors.choices && (
-                  <p className="mt-1.5 text-xs text-red-600 font-medium">{questionErrors.choices}</p>
+                  <p className="mt-3 font-mono text-xs font-bold uppercase text-white bg-red-600 inline-block px-2 py-1 border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{questionErrors.choices}</p>
                 )}
                 {questionErrors.correct && (
-                  <p className="mt-1.5 text-xs text-red-600 font-medium">{questionErrors.correct}</p>
+                  <p className="mt-3 font-mono text-xs font-bold uppercase text-white bg-red-600 inline-block px-2 py-1 border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{questionErrors.correct}</p>
                 )}
-                <button
-                  type="button"
-                  onClick={handleAddChoice}
-                  className="mt-3 text-sm text-secondary-600 hover:text-secondary-700 font-semibold"
-                >
-                  + Add Choice
-                </button>
+                <div className="mt-6 pt-4 border-t-2 border-black border-dashed">
+                  <button
+                    type="button"
+                    onClick={handleAddChoice}
+                    className="inline-flex items-center px-4 py-2 bg-secondary-400 text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-none"
+                  >
+                    + Add Choice
+                  </button>
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Explanation (optional)</label>
+                <label className="block font-mono text-sm font-bold uppercase tracking-widest text-black mb-2">Explanation (optional)</label>
                 <textarea
                   value={explanation}
                   onChange={(e) => setExplanation(e.target.value)}
                   rows={2}
-                  className="input w-full"
+                  className="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                 />
               </div>
 
@@ -512,10 +523,10 @@ export default function InstructorQuizPage() {
                 onChange={(e) => setPoints(Number(e.target.value) || 1)}
               />
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setShowQuestionModal(false)} className="btn-secondary py-2.5 px-5 text-sm">Cancel</button>
-                <button type="submit" disabled={savingQuestion} className="btn-primary py-2.5 px-5 text-sm">
-                  {savingQuestion ? 'Saving...' : editingQuestion ? 'Update' : 'Add Question'}
+              <div className="flex justify-end gap-4 pt-6 border-t-4 border-black">
+                <button type="button" onClick={() => setShowQuestionModal(false)} className="px-6 py-4 bg-white text-black border-2 border-black font-mono text-xs font-bold uppercase tracking-widest transition-all hover:bg-slate-100 min-w-[120px]">Cancel</button>
+                <button type="submit" disabled={savingQuestion} className="px-6 py-4 bg-black text-white border-2 border-black font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none min-w-[160px] disabled:opacity-50">
+                  {savingQuestion ? 'Saving...' : editingQuestion ? 'Update Question' : 'Add Question'}
                 </button>
               </div>
             </form>

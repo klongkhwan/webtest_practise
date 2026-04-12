@@ -113,8 +113,7 @@ export default function CoursesPage() {
 
     if (enrollment.status === 'COMPLETED' || enrollment.progress_percent >= 100) {
       return (
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ring-1 bg-emerald-50 text-emerald-700 ring-emerald-600/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <span className="inline-block px-2 text-[10px] font-mono tracking-widest uppercase border border-black badge-green">
           Completed
         </span>
       );
@@ -122,16 +121,14 @@ export default function CoursesPage() {
 
     if (enrollment.progress_percent > 0) {
       return (
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ring-1 bg-blue-50 text-blue-700 ring-blue-600/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+        <span className="inline-block px-2 text-[10px] font-mono tracking-widest uppercase border border-black badge-yellow">
           {enrollment.progress_percent}%
         </span>
       );
     }
 
     return (
-      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ring-1 bg-indigo-50 text-indigo-700 ring-indigo-600/20">
-        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+      <span className="inline-block px-2 text-[10px] font-mono tracking-widest uppercase border border-black badge-blue">
         Enrolled
       </span>
     );
@@ -140,20 +137,19 @@ export default function CoursesPage() {
   return (
     <div className="page-container">
       {/* Hero header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-secondary-700 via-secondary-600 to-cyan-600 rounded-2xl p-8 sm:p-10 mb-8">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4" />
-        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-white/5 rounded-full" />
-
-        <div className="relative">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
-            <span className="text-white/90 text-xs font-medium">Course Catalog</span>
+      <div className="border-t-2 border-l-2 border-r-2 border-black bg-white mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+        {/* Minimalist geometric background lines */}
+        <div className="absolute top-0 right-0 w-full h-full opacity-5 pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000)', backgroundSize: '60px 60px', backgroundPosition: '0 0, 30px 30px' }} />
+        
+        <div className="p-8 sm:p-12 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+          <div>
+            <div className="inline-block px-3 py-1 border border-black text-black font-mono text-[10px] uppercase tracking-widest mb-4 font-bold bg-white">
+              Course Catalog
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-serif text-black tracking-tight">All Courses</h1>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">All Courses</h1>
-          <p className="mt-2 text-secondary-100/80 max-w-md text-sm">
-            Explore our collection and start learning today.
+          <p className="text-slate-600 font-mono text-sm max-w-sm leading-relaxed text-right border-l-2 border-black pl-6 hidden md:block">
+            Don't wait for the perfect map; just start walking and create your own.
           </p>
         </div>
       </div>
@@ -163,48 +159,49 @@ export default function CoursesPage() {
       )}
 
       {/* Search & Filter bar */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="mb-8 border-y-2 border-black py-4">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          
           {/* Search */}
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <div className="relative w-full md:w-96 flex-shrink-0">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
             <input
               type="text"
-              placeholder="Search courses..."
+              placeholder="SEARCH COURSES..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-secondary-200 focus:border-secondary-300 transition-all"
+              className="w-full pl-10 pr-10 py-2.5 bg-transparent border border-black rounded-none text-sm font-mono text-black placeholder-slate-400 focus:outline-none focus:ring-0 focus:border-secondary-600 transition-all uppercase tracking-wider"
             />
             {searchQuery && (
               <button
                 onClick={() => { setSearchQuery(''); fetchCourses(''); }}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-black hover:text-secondary-600"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             )}
           </div>
 
           {/* Filter tabs */}
-          <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1 border border-slate-100 overflow-x-auto">
+          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar">
             {filterTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveFilter(tab.key)}
-                className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+                className={`relative flex items-center gap-1.5 px-4 py-2 text-[10px] font-mono font-bold tracking-widest uppercase transition-all duration-200 whitespace-nowrap border-2 ${
                   activeFilter === tab.key
-                    ? 'bg-white text-secondary-700 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-secondary-400 text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-x-[-1px] translate-y-[-1px]'
+                    : 'bg-transparent text-slate-500 border-transparent hover:border-black hover:text-black hover:bg-slate-50'
                 }`}
               >
                 {tab.label}
                 {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 min-w-[20px] text-center border ${
                     activeFilter === tab.key
-                      ? 'bg-secondary-50 text-secondary-700'
-                      : 'bg-slate-200/70 text-slate-500'
+                      ? 'bg-white text-black border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
+                      : 'bg-slate-100 text-slate-500 border-slate-200'
                   }`}>
                     {tab.count}
                   </span>
@@ -224,69 +221,65 @@ export default function CoursesPage() {
 
       {/* Course grid */}
       {!fetching && filteredCourses.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="p-16 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary-50 to-cyan-50 flex items-center justify-center mx-auto mb-5">
-              <svg className="w-10 h-10 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-            </div>
-            {searchQuery || activeFilter !== 'ALL' ? (
-              <>
-                <p className="text-slate-900 font-semibold text-lg mb-1">No courses found</p>
-                <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
-                  Try adjusting your search or filter to find what you&apos;re looking for.
-                </p>
-                <button
-                  onClick={() => { setSearchQuery(''); setActiveFilter('ALL'); fetchCourses(''); }}
-                  className="btn-secondary px-5 text-sm gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                  Clear filters
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-slate-900 font-semibold text-lg mb-1">No courses available yet</p>
-                <p className="text-slate-400 text-sm">Check back soon for new content.</p>
-              </>
-            )}
+        <div className="bg-white border-2 border-black p-16 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
           </div>
+          {searchQuery || activeFilter !== 'ALL' ? (
+            <>
+              <p className="text-black font-serif text-2xl mb-2">No courses found</p>
+              <p className="text-slate-500 font-mono text-sm mb-8 max-w-sm mx-auto">
+                Try adjusting your search or filter to find what you're looking for.
+              </p>
+              <button
+                onClick={() => { setSearchQuery(''); setActiveFilter('ALL'); fetchCourses(''); }}
+                className="inline-flex items-center gap-2 px-6 py-3 border-2 border-black bg-white hover:bg-secondary-400 text-black font-mono font-bold text-[10px] uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Clear filters
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-black font-serif text-2xl mb-2">No courses available yet</p>
+              <p className="text-slate-500 font-mono text-sm max-w-sm mx-auto">Check back soon for new content.</p>
+            </>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.map((course) => {
             const enrollment = getEnrollment(course.id);
             return (
               <Link
                 key={course.id}
                 href={`/courses/${course.id}`}
-                className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-slate-200/50 hover:border-slate-200 transition-all duration-300 overflow-hidden hover:-translate-y-0.5"
+                className="group bg-white border-2 border-black flex flex-col hover:-translate-y-0.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all duration-300 relative"
               >
                 {/* Thumbnail */}
-                <div className="aspect-video bg-gradient-to-br from-secondary-500 via-secondary-400 to-cyan-400 flex items-center justify-center relative overflow-hidden">
+                <div className="aspect-video bg-secondary-900 border-b-2 border-black flex items-center justify-center relative overflow-hidden">
                   {course.thumbnail_url ? (
-                    <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
+                    <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105" />
                   ) : (
-                    <svg className="w-12 h-12 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
                   )}
                   {/* Price badge */}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-0 right-0">
                     {course.is_paid ? (
-                      <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm text-sm font-bold text-secondary-700 shadow-lg">
+                      <span className="inline-block px-4 py-2 border-b-2 border-l-2 border-black bg-white font-mono text-[10px] font-bold text-black uppercase tracking-widest leading-none">
                         ${course.price}
                       </span>
                     ) : (
-                      <span className="px-3 py-1 rounded-full bg-emerald-500/90 backdrop-blur-sm text-sm font-bold text-white shadow-lg">
+                      <span className="inline-block px-4 py-2 border-b-2 border-l-2 border-black bg-secondary-400 font-mono text-[10px] font-bold text-black uppercase tracking-widest leading-none">
                         Free
                       </span>
                     )}
                   </div>
                   {/* Progress bar overlay */}
                   {enrollment && enrollment.progress_percent > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black">
                       <div
-                        className="h-full bg-emerald-400 transition-all duration-500"
+                        className="h-full bg-secondary-500 transition-all duration-500"
                         style={{ width: `${Math.min(enrollment.progress_percent, 100)}%` }}
                       />
                     </div>
@@ -294,31 +287,31 @@ export default function CoursesPage() {
                 </div>
 
                 {/* Content */}
-                <div className="p-5">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <h3 className="font-bold text-slate-900 line-clamp-1 group-hover:text-secondary-600 transition-colors flex-1 min-w-0">
-                      {course.title}
-                    </h3>
+                <div className="p-6 flex flex-col flex-grow relative">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     {getEnrollmentBadge(course.id)}
                   </div>
-                  <p className="text-sm text-slate-400 line-clamp-2 mb-4">{course.description || 'No description available'}</p>
+                  <h3 className="font-serif text-xl font-bold text-black leading-tight group-hover:text-secondary-700 transition-colors mb-3 line-clamp-2">
+                    {course.title}
+                  </h3>
+                  <p className="font-mono text-xs text-slate-600 line-clamp-3 mb-6 leading-relaxed flex-grow">
+                    {course.description || 'No description available'}
+                  </p>
 
                   {/* Meta */}
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-secondary-400 to-cyan-400 flex items-center justify-center flex-shrink-0">
-                        <span className="text-[10px] font-bold text-white">{course.instructor?.full_name?.charAt(0) || 'I'}</span>
-                      </div>
-                      <span className="text-xs text-slate-500 font-medium truncate max-w-[120px]">{course.instructor?.full_name || 'Instructor'}</span>
+                  <div className="flex items-center justify-between pt-4 border-t border-black/10 mt-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Inst:</span>
+                      <span className="text-xs font-mono text-black font-bold uppercase truncate max-w-[100px]">{course.instructor?.full_name || 'Instructor'}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-slate-400">
-                      <span className="inline-flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                        <span className="font-medium text-slate-500">{course.lessons_count ?? 0}</span>
+                    <div className="flex items-center gap-3 text-[10px] font-mono text-slate-500">
+                      <span className="inline-flex items-center gap-1.5 uppercase">
+                        <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        {course.lessons_count ?? 0}
                       </span>
-                      <span className="inline-flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
-                        <span className="font-medium text-slate-500">{course.enrollments_count ?? 0}</span>
+                      <span className="inline-flex items-center gap-1.5 uppercase">
+                        <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                        {course.enrollments_count ?? 0}
                       </span>
                     </div>
                   </div>

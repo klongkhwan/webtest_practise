@@ -78,6 +78,8 @@ export async function POST(request: NextRequest) {
     const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
     const isPassed = percentage >= quiz.passing_score;
     
+    let attemptId = null;
+
     // Only save to database if the user passed the quiz, as requested.
     if (isPassed) {
       // Save the attempt to the database so it can be verified by the progress API
@@ -101,6 +103,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to save quiz result' }, { status: 500 });
       }
 
+      attemptId = attempt.id;
+
       // Save individual answers for historical tracking
       if (answerRecords.length > 0) {
         const { error: answersError } = await supabaseAdmin!
@@ -123,6 +127,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: isPassed ? 'Quiz passed and saved successfully' : 'Quiz evaluated successfully',
+      attemptId,
       score,
       maxScore,
       percentage,

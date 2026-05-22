@@ -14,7 +14,6 @@ export default function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotMethod, setForgotMethod] = useState<'email' | 'phone'>('email');
   const [forgotValue, setForgotValue] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState('');
@@ -73,17 +72,11 @@ export default function LoginPage() {
     setForgotMessage('');
 
     try {
-      if (forgotMethod === 'email') {
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(forgotValue, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        });
-        if (error) throw error;
-        setForgotMessage('Password reset link has been sent to your email.');
-      } else {
-        // For phone, we would need to implement OTP flow
-        // This is a placeholder for phone password reset
-        setForgotMessage('Phone password reset is not yet implemented. Please use email.');
-      }
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(forgotValue, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setForgotMessage('Password reset link has been sent to your email.');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send reset request';
       setForgotMessage(errorMessage);
@@ -253,43 +246,18 @@ export default function LoginPage() {
             </div>
             <form onSubmit={handleForgotPassword} className="p-6 space-y-4">
               <p className="text-sm text-gray-600">
-                Choose how you want to receive the password reset link:
+                Enter your email address and we&apos;ll send a password reset link.
               </p>
-              
-              <div className="flex gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="method"
-                    value="email"
-                    checked={forgotMethod === 'email'}
-                    onChange={() => setForgotMethod('email')}
-                    className="text-secondary-700 focus:ring-secondary-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Email</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="method"
-                    value="phone"
-                    checked={forgotMethod === 'phone'}
-                    onChange={() => setForgotMethod('phone')}
-                    className="text-secondary-700 focus:ring-secondary-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Phone</span>
-                </label>
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  {forgotMethod === 'email' ? 'Email address' : 'Phone number'}
+                  Email address
                 </label>
                 <input
-                  type={forgotMethod === 'email' ? 'email' : 'tel'}
+                  type="email"
                   value={forgotValue}
                   onChange={(e) => setForgotValue(e.target.value)}
-                  placeholder={forgotMethod === 'email' ? 'your@email.com' : '0123456789'}
+                  placeholder="your@email.com"
                   className="input w-full bg-white mt-1"
                   required
                 />

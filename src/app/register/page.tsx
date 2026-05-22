@@ -128,20 +128,8 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Failed to create profile');
       }
 
-      // Send OTP to phone number
-      try {
-        await fetch('/api/auth/otp/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: formData.phone }),
-        });
-      } catch {
-        // OTP send failure shouldn't block registration
-        console.error('Failed to send OTP, redirecting to verify page anyway');
-      }
-
-      // Redirect to OTP verification page
-      router.push(`/otp-verify?phone=${encodeURIComponent(formData.phone)}`);
+      // Redirect to dashboard after successful registration
+      window.location.href = '/dashboard';
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
       setError(errorMessage);

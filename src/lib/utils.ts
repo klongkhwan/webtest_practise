@@ -23,19 +23,6 @@ export function formatDuration(minutes: number): string {
   return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
 }
 
-export function generateOtpCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-export function sanitizePhone(phone: string): string {
-  return phone.replace(/\D/g, '');
-}
-
-export function isValidPhone(phone: string): boolean {
-  const sanitized = sanitizePhone(phone);
-  return sanitized.length >= 10 && sanitized.length <= 15;
-}
-
 export function calculatePercentage(score: number, maxScore: number): number {
   if (maxScore === 0) return 0;
   return Math.round((score / maxScore) * 100);

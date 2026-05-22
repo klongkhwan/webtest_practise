@@ -1,15 +1,6 @@
 import { z } from 'zod';
 
 // Auth validation
-export const loginSchema = z.object({
-  phone: z.string().min(10).max(15).regex(/^\+?[\d\s-]+$/, 'Invalid phone number'),
-});
-
-export const verifyOtpSchema = z.object({
-  phone: z.string().min(10).max(15),
-  code: z.string().length(6).regex(/^\d+$/, 'Code must be 6 digits'),
-});
-
 export const completeProfileSchema = z.object({
   full_name: z.string().min(2).max(100),
   email: z.string().email(),
@@ -98,8 +89,6 @@ export const enrollSchema = z.object({
 });
 
 // Types from schemas
-export type LoginInput = z.infer<typeof loginSchema>;
-export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type CompleteProfileInput = z.infer<typeof completeProfileSchema>;
 export type CreateCourseInput = z.infer<typeof createCourseSchema>;
 export type UpdateCourseInput = z.infer<typeof updateCourseSchema>;

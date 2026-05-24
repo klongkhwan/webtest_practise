@@ -20,6 +20,7 @@
 # skill
 skills-lock.json
 .agents/
+.cursor/
 
 # debug
 npm-debug.log*

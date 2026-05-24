@@ -33,41 +33,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  useEffect(() => {
-    // 1. Initial Load from Cache
-    const cachedUser = localStorage.getItem('lms_user_cache');
-    if (cachedUser) {
-      try {
-        const parsedUser = JSON.parse(cachedUser);
-        setUser(parsedUser);
-        setLoading(false);
-        setPageLoading(false);
-      } catch (e) {
-        localStorage.removeItem('lms_user_cache');
-      }
-    }
-
-    // 2. Revalidate with Server
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    setNavigating(false);
-    setPageLoading(true);
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('a');
-      if (target && target.getAttribute('href')?.startsWith('/') && target.getAttribute('href') !== pathname) {
-        setNavigating(true);
-      }
-    };
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [pathname]);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     loaderStartRef.current = Date.now();
     try {
       const { data: { user: authUser } } = await supabaseClient.auth.getUser();
@@ -93,7 +59,41 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    // 1. Initial Load from Cache
+    const cachedUser = localStorage.getItem('lms_user_cache');
+    if (cachedUser) {
+      try {
+        const parsedUser = JSON.parse(cachedUser);
+        setUser(parsedUser);
+        setLoading(false);
+        setPageLoading(false);
+      } catch (e) {
+        localStorage.removeItem('lms_user_cache');
+      }
+    }
+
+    // 2. Revalidate with Server
+    checkAuth();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    setNavigating(false);
+    setPageLoading(true);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a');
+      if (target && target.getAttribute('href')?.startsWith('/') && target.getAttribute('href') !== pathname) {
+        setNavigating(true);
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [pathname]);
 
   // Minimum 0.5s loader display + combine auth & page loading
   const isLoading = loading || pageLoading || navigating;

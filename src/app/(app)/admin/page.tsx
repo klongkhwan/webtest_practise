@@ -79,7 +79,7 @@ export default function AdminPage() {
       router.push('/dashboard');
       return;
     }
-  }, [currentUser]);
+  }, [currentUser, router]);
 
   useFetchOnce(fetchAll, [currentUser]);
 

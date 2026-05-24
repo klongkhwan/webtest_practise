@@ -90,7 +90,7 @@ function DashboardContent() {
             <span className="text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] not-italic">.</span>
           </h1>
           <p className="text-lg sm:text-xl font-medium text-black/80 max-w-xl leading-relaxed mb-8 border-l-4 border-black pl-6">
-            Your progress is the compass of your future. You've completed <span className="font-black underline decoration-white">{completedEnrollments.length} missions</span> so far. Ready for the next one?
+            Your progress is the compass of your future. You&apos;ve completed <span className="font-black underline decoration-white">{completedEnrollments.length} missions</span> so far. Ready for the next one?
           </p>
 
           <div className="flex flex-wrap gap-4 pt-4">
@@ -126,7 +126,7 @@ function DashboardContent() {
                   Champ is Here!
                 </h2>
                 <p className="text-secondary-200 font-mono text-sm max-w-lg mb-8 uppercase tracking-widest">
-                  You just finished <span className="text-white font-black underline">{celebratedCourse.title}</span>. That's a huge win for your career roadmap.
+                  You just finished <span className="text-white font-black underline">{celebratedCourse.title}</span>. That&apos;s a huge win for your career roadmap.
                 </p>
               </div>
               <div className="flex gap-4">
@@ -202,7 +202,7 @@ function DashboardContent() {
         {activeEnrollments.length === 0 ? (
           <div className="bg-white border-4 border-black p-16 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-slate-500 font-mono text-sm max-w-md mx-auto mb-8 tracking-widest uppercase">
-              You aren't enrolled in any active courses.
+              You aren&apos;t enrolled in any active courses.
             </p>
             <Link href="/courses" className="inline-block px-10 py-4 bg-primary-400 border-4 border-black text-black font-mono font-black uppercase text-sm tracking-widest hover:bg-black hover:text-white transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-4px] translate-y-[-4px]">
               Find Course Now

@@ -149,7 +149,7 @@ export default function CoursesPage() {
             <h1 className="text-4xl sm:text-5xl font-serif text-black tracking-tight">All Courses</h1>
           </div>
           <p className="text-slate-600 font-mono text-sm max-w-sm leading-relaxed text-right border-l-2 border-black pl-6 hidden md:block">
-            Don't wait for the perfect map; just start walking and create your own.
+            Don&apos;t wait for the perfect map; just start walking and create your own.
           </p>
         </div>
       </div>
@@ -229,7 +229,7 @@ export default function CoursesPage() {
             <>
               <p className="text-black font-serif text-2xl mb-2">No courses found</p>
               <p className="text-slate-500 font-mono text-sm mb-8 max-w-sm mx-auto">
-                Try adjusting your search or filter to find what you're looking for.
+                Try adjusting your search or filter to find what you&apos;re looking for.
               </p>
               <button
                 onClick={() => { setSearchQuery(''); setActiveFilter('ALL'); fetchCourses(''); }}

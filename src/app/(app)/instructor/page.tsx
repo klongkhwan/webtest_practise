@@ -68,7 +68,7 @@ export default function InstructorPage() {
       router.push('/dashboard');
       return;
     }
-  }, [currentUser]);
+  }, [currentUser, router]);
 
   useFetchOnce(() => fetchCourses('ALL', ''), [currentUser]);
 

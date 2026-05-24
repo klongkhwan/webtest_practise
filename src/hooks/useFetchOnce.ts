@@ -12,10 +12,12 @@ export function useFetchOnce(
 ) {
   const hasRun = useRef(false);
 
+  // The dependency list is intentionally managed by the caller.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
     fetchFn();
     // No cleanup — once run for this instance, don't reset
-  }, deps);
+  }, [fetchFn, ...deps]);
 }

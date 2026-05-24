@@ -32,3 +32,25 @@ jobs:
 
       - name: Build application
         run: npm run build
+
+      # Playwright smoke/e2e tests are intentionally left commented out for now.
+      # Uncomment and use this block when the Playwright test suite is added.
+      #
+      # - name: Install Playwright browsers
+      #   run: npx playwright install --with-deps
+      #
+      # - name: Start application
+      #   run: |
+      #     npm run dev > app.log 2>&1 &
+      #     echo $! > app.pid
+      #
+      # - name: Wait for application
+      #   run: npx wait-on http://127.0.0.1:3000
+      #
+      # - name: Run Playwright smoke tests
+      #   run: npx playwright test
+      #
+      # - name: Stop application
+      #   if: always()
+      #   run: |
+      #     if [ -f app.pid ]; then kill $(cat app.pid) || true; fi

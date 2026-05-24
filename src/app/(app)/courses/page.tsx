@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { useFetchOnce } from '@/hooks/useFetchOnce';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLayoutUser } from '@/components/AppLayout';
 import type { Course, Enrollment } from '@/types/database';
 
@@ -259,7 +260,13 @@ export default function CoursesPage() {
                 {/* Thumbnail */}
                 <div className="aspect-video bg-secondary-900 border-b-2 border-black flex items-center justify-center relative overflow-hidden">
                   {course.thumbnail_url ? (
-                    <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105" />
+                    <Image
+                      src={course.thumbnail_url}
+                      alt={course.title}
+                      fill
+                      className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                   ) : (
                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
                   )}

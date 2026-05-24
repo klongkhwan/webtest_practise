@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 
+
 /**
  * Prevents React StrictMode from double-invoking an async fetch.
  * Uses a per-instance ref — no shared cache, no context dependency.
@@ -19,5 +20,5 @@ export function useFetchOnce(
     hasRun.current = true;
     fetchFn();
     // No cleanup — once run for this instance, don't reset
-  }, [fetchFn, ...deps]);
+  }, [fetchFn]);
 }

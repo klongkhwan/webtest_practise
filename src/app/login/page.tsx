@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabaseClient } from '@/lib/supabase/client';
+import { getSupabaseClient } from '@/lib/supabase/client';
 import { FormInput } from '@/components/FormInput';
 
 export default function LoginPage() {
@@ -72,7 +72,7 @@ export default function LoginPage() {
     setForgotMessage('');
 
     try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(forgotValue, {
+      const { error } = await getSupabaseClient().auth.resetPasswordForEmail(forgotValue, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;

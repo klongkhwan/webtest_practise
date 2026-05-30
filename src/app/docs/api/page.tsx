@@ -41,6 +41,16 @@ const apiCategories: ApiCategory[] = [
         response: { message: "Registration successful", user: { id: "...", email: "..." } }
       },
       { 
+        method: 'POST', 
+        path: '/api/auth/login', 
+        description: 'Authenticate user credentials and return an access token.',
+        payload: {
+          email: "user@example.com",
+          password: "password123"
+        },
+        response: { access_token: "eyJhbGciOi...", user: { id: "...", email: "...", role: "STUDENT" } }
+      },
+      { 
         method: 'GET', 
         path: '/api/auth/me', 
         description: 'Get the currently authenticated user profile.',
@@ -56,7 +66,7 @@ const apiCategories: ApiCategory[] = [
       { 
         method: 'GET', 
         path: '/api/courses', 
-        description: 'List all published courses with pagination and search.',
+        description: 'List all courses with status pagination and search.',
         params: [
           { name: 'search', type: 'string', required: false, description: 'Search title for keyword' },
           { name: 'status', type: 'string', required: false, description: 'PUBLISHED (default), DRAFT, ARCHIVED' },
@@ -74,13 +84,31 @@ const apiCategories: ApiCategory[] = [
           description: "Course description (optional)",
           is_paid: "boolean",
           price: "number"
-        }
+        },
+        response: { course: { id: "...", title: "...", status: "DRAFT" } }
       },
       { 
         method: 'GET', 
         path: '/api/courses/[id]', 
         description: 'Get detailed information about a specific course.',
         response: { id: "...", title: "...", lessons: ["..."], instructor: { name: "..." } }
+      },
+      { 
+        method: 'PATCH', 
+        path: '/api/courses/[id]', 
+        description: 'Update course details or status (Instructor/Admin only).',
+        payload: {
+          title: "Updated course title",
+          description: "Updated description",
+          status: "PUBLISHED | DRAFT | ARCHIVED"
+        },
+        response: { course: { id: "...", title: "...", status: "PUBLISHED" } }
+      },
+      { 
+        method: 'DELETE', 
+        path: '/api/courses/[id]', 
+        description: 'Delete a course by its ID (Instructor/Admin only).',
+        response: { message: "Course deleted successfully" }
       },
     ],
   },
@@ -93,7 +121,8 @@ const apiCategories: ApiCategory[] = [
         method: 'GET', 
         path: '/api/lessons', 
         description: 'List all lessons for a specific course.',
-        params: [{ name: 'courseId', type: 'UUID', required: true, description: 'Filter by course' }]
+        params: [{ name: 'courseId', type: 'UUID', required: true, description: 'Filter by course' }],
+        response: { lessons: [ { id: "...", title: "..." } ] }
       },
       { 
         method: 'POST', 
@@ -106,21 +135,53 @@ const apiCategories: ApiCategory[] = [
           video_url: "URL (optional)",
           is_free: "boolean",
           duration_minutes: "number"
-        }
+        },
+        response: { lesson: { id: "...", title: "..." } }
       },
-      { method: 'GET', path: '/api/lessons/[id]', description: 'Get a single lesson by its ID including content and video' },
+      { 
+        method: 'GET', 
+        path: '/api/lessons/[id]', 
+        description: 'Get a single lesson by its ID including content and video.',
+        response: { lesson: { id: "...", title: "...", content: "..." } }
+      },
+      { 
+        method: 'PATCH', 
+        path: '/api/lessons/[id]', 
+        description: 'Update a lesson by ID (Instructor/Admin only).',
+        payload: {
+          title: "Updated Title",
+          content: "Updated Content",
+          video_url: "https://...",
+          is_free: "boolean",
+          duration_minutes: "number"
+        },
+        response: { lesson: { id: "...", title: "..." } }
+      },
+      { 
+        method: 'DELETE', 
+        path: '/api/lessons/[id]', 
+        description: 'Delete a lesson by ID (Instructor/Admin only).',
+        response: { message: "Lesson deleted successfully" }
+      },
     ],
   },
   {
-    name: 'Enrollments',
+    name: 'Enrollments & Progress',
     emoji: '✋',
-    description: 'Manage student enrollments into courses.',
+    description: 'Manage student enrollments into courses and track lesson completions.',
     endpoints: [
+      { 
+        method: 'GET', 
+        path: '/api/enrollments', 
+        description: 'Get current authenticated user\'s enrollments with course details.',
+        response: { enrollments: [ { id: "...", course_id: "...", status: "ACTIVE", progress_percent: 45 } ] }
+      },
       { 
         method: 'POST', 
         path: '/api/enrollments', 
         description: 'Enroll the current user in a course.',
-        payload: { course_id: "UUID" }
+        payload: { course_id: "UUID" },
+        response: { enrollment: { id: "...", course_id: "...", status: "ACTIVE" } }
       },
       { 
         method: 'GET', 
@@ -132,25 +193,50 @@ const apiCategories: ApiCategory[] = [
         method: 'POST', 
         path: '/api/progress', 
         description: 'Mark a lesson as completed.',
-        payload: { lesson_id: "UUID", course_id: "UUID" }
+        payload: { lesson_id: "UUID", course_id: "UUID" },
+        response: { progress: { id: "...", is_completed: true } }
       },
     ],
   },
   {
-    name: 'Quizzes',
+    name: 'Quizzes & Certificates',
     emoji: '❓',
-    description: 'CRUD for quizzes (per-lesson), including scoring configuration.',
+    description: 'Manage quizzes, question sets, choice options, submissions, and course certificates.',
     endpoints: [
       { 
         method: 'GET', 
         path: '/api/quizzes', 
-        description: 'List all quizzes for a given lesson.',
-        params: [{ name: 'lessonId', type: 'UUID', required: true, description: 'Filter by lesson' }]
+        description: 'List all quizzes for a given lesson or course.',
+        params: [
+          { name: 'lessonId', type: 'UUID', required: false, description: 'Filter by lesson' },
+          { name: 'courseId', type: 'UUID', required: false, description: 'Filter by course' }
+        ],
+        response: { quizzes: [ { id: "...", title: "..." } ] }
+      },
+      { 
+        method: 'POST', 
+        path: '/api/quizzes', 
+        description: 'Create a new quiz for a lesson (Instructor/Admin only).',
+        payload: {
+          course_id: "UUID",
+          lesson_id: "UUID",
+          title: "Quiz Title",
+          description: "Quiz description (optional)",
+          passing_score: "number (default 80)",
+          time_limit_minutes: "number (default 5)"
+        },
+        response: { quiz: { id: "...", title: "..." } }
+      },
+      { 
+        method: 'GET', 
+        path: '/api/quiz/[id]', 
+        description: 'Get student-facing quiz details including questions and choices (without correct answer flags).',
+        response: { quiz: { id: "...", title: "...", questions: [ { id: "...", question: "...", choices: [ { id: "...", text: "..." } ] } ] } }
       },
       { 
         method: 'POST', 
         path: '/api/quiz/submit', 
-        description: 'Submit quiz answers and receive scoring.',
+        description: 'Submit quiz answers and calculate score.',
         payload: {
           quiz_id: "UUID",
           answers: [
@@ -160,10 +246,26 @@ const apiCategories: ApiCategory[] = [
         response: { score: 85, passed: true, total_questions: 10, correct_answers: 8 }
       },
       { 
+        method: 'POST', 
+        path: '/api/questions', 
+        description: 'Create a new quiz question or batch choice options (Instructor/Admin only).',
+        payload: {
+          quiz_id: "UUID (for question creation)",
+          question: "Question text? (for question creation)",
+          explanation: "Explanation detail (optional)",
+          points: "number (default 1)",
+          question_id: "UUID (for choices creation)",
+          choices: [
+            { text: "Choice 1", is_correct: true, order_index: 0 }
+          ]
+        },
+        response: { question: { id: "..." } }
+      },
+      { 
         method: 'GET', 
-        path: '/api/quizzes/[id]', 
-        description: 'Get quiz details including questions and choices.',
-        response: { id: "...", title: "...", questions: [ { id: "...", text: "...", choices: ["..."] } ] }
+        path: '/api/certificates', 
+        description: 'Get all certificates issued to the current user.',
+        response: { certificates: [ { id: "...", course_id: "...", certificate_url: "..." } ] }
       },
       { 
         method: 'POST', 
@@ -186,13 +288,15 @@ const apiCategories: ApiCategory[] = [
         params: [
           { name: 'role', type: 'string', required: false, description: 'STUDENT, INSTRUCTOR, ADMIN' },
           { name: 'search', type: 'string', required: false, description: 'Search name or email' }
-        ]
+        ],
+        response: { users: [ { id: "...", email: "...", role: "STUDENT" } ] }
       },
       { 
         method: 'PATCH', 
         path: '/api/users/[id]', 
         description: 'Update user role.',
-        payload: { role: "ADMIN | INSTRUCTOR | STUDENT" }
+        payload: { role: "ADMIN | INSTRUCTOR | STUDENT" },
+        response: { user: { id: "...", role: "INSTRUCTOR" } }
       },
     ],
   },

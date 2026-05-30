@@ -88,6 +88,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Prevent duplicate lesson title within the same course
+    const normalizedTitle = validation.data.title.trim();
+    const { data: duplicateLesson, error: duplicateCheckError } = await supabaseAdmin!
+      .from('lessons')
+      .select('id,title')
+      .eq('course_id', validation.data.course_id)
+      .ilike('title', normalizedTitle)
+      .maybeSingle();
+
+    if (duplicateCheckError && duplicateCheckError.code !== 'PGRST116') {
+      console.error('Duplicate lesson title check error:', duplicateCheckError);
+      return NextResponse.json(
+        { error: 'Failed to validate lesson title' },
+        { status: 500 }
+      );
+    }
+
+    if (duplicateLesson) {
+      return NextResponse.json(
+        { error: 'Lesson title already exists' },
+        { status: 409 }
+      );
+    }
+
     // Get next order index
     const { data: lastLesson } = await supabaseAdmin!
       .from('lessons')
@@ -104,6 +128,7 @@ export async function POST(request: NextRequest) {
       .from('lessons')
       .insert({
         ...validation.data,
+        title: normalizedTitle,
         order_index: orderIndex,
       })
       .select()

@@ -10,10 +10,29 @@ export async function GET(
   try {
     const { id } = await params;
 
-    // Get lesson with course info
+    // Get lesson details with minimal course payload for lesson page
     const { data: lesson, error } = await supabaseAdmin!
       .from('lessons')
-      .select('*, course:courses(*, instructor:users(*), lessons(*)), quiz:quizzes(*, questions(*, choices(*)))')
+      .select(`
+        id,
+        course_id,
+        title,
+        content,
+        video_url,
+        order_index,
+        is_free,
+        duration_minutes,
+        created_at,
+        updated_at,
+        course:courses(
+          id,
+          title,
+          is_paid,
+          price,
+          lessons(id,title,order_index,is_free,duration_minutes)
+        ),
+        quiz:quizzes(*, questions(*, choices(*)))
+      `)
       .eq('id', id)
       .single();
 
@@ -24,10 +43,6 @@ export async function GET(
       );
     }
 
-    // Sort the lessons loaded in the course representation
-    if (lesson.course && Array.isArray(lesson.course.lessons)) {
-      lesson.course.lessons.sort((a: any, b: any) => a.order_index - b.order_index);
-    }
 
     // Get user progress for this lesson
     const authUser = await getAuthUser(request);
@@ -54,14 +69,19 @@ export async function GET(
         progress = progressData;
 
         // Get progress for ALL lessons in this course
-        if (lesson.course?.lessons && lesson.course.lessons.length > 0) {
-          const lessonIds = lesson.course.lessons.map((l: any) => l.id);
+        const { data: courseLessonRows } = await supabaseAdmin!
+          .from('lessons')
+          .select('id')
+          .eq('course_id', lesson.course_id);
+
+        const lessonIds = (courseLessonRows || []).map((l: any) => l.id);
+        if (lessonIds.length > 0) {
           const { data: allProgressData } = await supabaseAdmin!
             .from('lesson_progress')
             .select('*')
             .eq('user_id', user.id)
             .in('lesson_id', lessonIds);
-            
+
           if (allProgressData) {
             lessonProgresses = allProgressData;
           }
@@ -72,7 +92,7 @@ export async function GET(
           .from('enrollments')
           .select('*')
           .eq('user_id', user.id)
-          .eq('course_id', lesson.course.id)
+          .eq('course_id', lesson.course_id)
           .single();
         enrollment = enrollData;
         
@@ -182,6 +202,44 @@ export async function PATCH(
       );
     }
 
+    // Prevent duplicate lesson title within the same course on update
+    if (typeof validation.data.title === 'string') {
+      const normalizedTitle = validation.data.title.trim();
+      const { data: courseData } = await supabaseAdmin!
+        .from('lessons')
+        .select('course_id')
+        .eq('id', id)
+        .single();
+        
+      const courseId = courseData?.course_id;
+
+      const { data: duplicateLesson, error: duplicateCheckError } = await supabaseAdmin!
+        .from('lessons')
+        .select('id,title')
+        .eq('course_id', courseId)
+        .ilike('title', normalizedTitle)
+        .neq('id', id) // exclude current lesson
+        .maybeSingle();
+
+      if (duplicateCheckError && duplicateCheckError.code !== 'PGRST116') {
+        console.error('Duplicate lesson title check error (PATCH):', duplicateCheckError);
+        return NextResponse.json(
+          { error: 'Failed to validate lesson title' },
+          { status: 500 }
+        );
+      }
+
+      if (duplicateLesson) {
+        return NextResponse.json(
+          { error: 'Lesson title already exists in this course' },
+          { status: 409 }
+        );
+      }
+
+      // Apply trimmed title to update
+      (validation.data as any).title = normalizedTitle;
+    }
+
     // Update lesson
     const { data: updatedLesson, error } = await supabaseAdmin!
       .from('lessons')
@@ -248,6 +306,20 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Not authorized to delete this lesson' },
         { status: 403 }
+      );
+    }
+
+    // Delete quizzes linked to this lesson first
+    const { error: deleteQuizzesError } = await supabaseAdmin!
+      .from('quizzes')
+      .delete()
+      .eq('lesson_id', id);
+
+    if (deleteQuizzesError) {
+      console.error('Delete linked quizzes error:', deleteQuizzesError);
+      return NextResponse.json(
+        { error: 'Failed to delete lesson quizzes' },
+        { status: 500 }
       );
     }
 

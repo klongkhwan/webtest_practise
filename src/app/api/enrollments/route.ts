@@ -94,17 +94,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if already enrolled
-    const { data: existingEnrollment } = await supabaseAdmin!
+    // Check existing enrollment to prevent duplicate enroll/re-enroll
+    const { data: existingEnrollment, error: existingEnrollmentError } = await supabaseAdmin!
       .from('enrollments')
       .select('*')
       .eq('user_id', user.id)
       .eq('course_id', course_id)
-      .single();
-    
-    if (existingEnrollment) {
+      .maybeSingle();
+
+    if (existingEnrollmentError) {
+      console.error('Check existing enrollment error:', existingEnrollmentError);
       return NextResponse.json(
-        { error: 'Already enrolled in this course', enrollment: existingEnrollment },
+        { error: 'Failed to validate enrollment state' },
+        { status: 500 }
+      );
+    }
+
+    if (existingEnrollment) {
+      if (existingEnrollment.status === 'COMPLETED') {
+        return NextResponse.json(
+          { error: 'You have already completed this course' },
+          { status: 409 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: 'Already enrolled in this course' },
         { status: 409 }
       );
     }

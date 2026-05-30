@@ -320,7 +320,7 @@ export default function InstructorCoursePage() {
                             </span>
                           )}
                           {lesson.duration_minutes > 0 && <span>{lesson.duration_minutes} min</span>}
-                          {lesson.is_free && <span className="badge-green text-[10px]">Preview</span>}
+                          {lesson.is_free && <span className="badge-pink text-[10px]">Preview</span>}
                           {lessonQuizzes.length > 0 && lessonQuizzes.map((q) => (
                             <span key={q.id} className="text-secondary-600">
                               Quiz = {q.questions_count ?? q.questions?.length ?? 0} question{((q.questions_count ?? q.questions?.length ?? 0) !== 1) ? 's' : ''}

@@ -15,7 +15,7 @@ export async function GET(
       .from('courses')
       .select(`
         *,
-        instructor:users(*),
+        instructor:users(id,email,full_name),
         lessons(*, quiz:quizzes(*, questions(count))),
         enrollments(count)
       `)
@@ -137,12 +137,43 @@ export async function PATCH(
       );
     }
     
+    const payload: Record<string, any> = { ...validation.data };
+
+    // Prevent duplicate title when title is being updated
+    if (typeof payload.title === 'string') {
+      const normalizedTitle = payload.title.trim();
+
+      const { data: duplicateCourse, error: duplicateCheckError } = await supabaseAdmin!
+        .from('courses')
+        .select('id,title')
+        .ilike('title', normalizedTitle)
+        .neq('id', id)
+        .maybeSingle();
+
+      if (duplicateCheckError && duplicateCheckError.code !== 'PGRST116') {
+        console.error('Duplicate title check error (PATCH):', duplicateCheckError);
+        return NextResponse.json(
+          { error: 'Failed to validate course title' },
+          { status: 500 }
+        );
+      }
+
+      if (duplicateCourse) {
+        return NextResponse.json(
+          { error: 'Course title already exists' },
+          { status: 409 }
+        );
+      }
+
+      payload.title = normalizedTitle;
+    }
+
     // Update course
     const { data: updatedCourse, error } = await supabaseAdmin!
       .from('courses')
-      .update(validation.data)
+      .update(payload)
       .eq('id', id)
-      .select('*, instructor:users(*)')
+      .select('*, instructor:users(id,email,full_name)')
       .single();
     
     if (error) {
@@ -206,12 +237,46 @@ export async function DELETE(
       );
     }
     
-    // Delete course (cascade will handle related records)
+    // Prevent deleting course when there are enrolled students
+    const { count: enrolledCount, error: enrollmentCountError } = await supabaseAdmin!
+      .from('enrollments')
+      .select('id', { count: 'exact', head: true })
+      .eq('course_id', id);
+
+    if (enrollmentCountError) {
+      console.error('Check enrollments before delete error:', enrollmentCountError);
+      return NextResponse.json(
+        { error: 'Failed to validate course enrollments' },
+        { status: 500 }
+      );
+    }
+
+    if ((enrolledCount ?? 0) > 0) {
+      return NextResponse.json(
+        { error: 'Cannot delete course with enrolled students' },
+        { status: 409 }
+      );
+    }
+
+    // No enrollments: delete lessons first, then course
+    const { error: deleteLessonsError } = await supabaseAdmin!
+      .from('lessons')
+      .delete()
+      .eq('course_id', id);
+
+    if (deleteLessonsError) {
+      console.error('Delete lessons error:', deleteLessonsError);
+      return NextResponse.json(
+        { error: 'Failed to delete course lessons' },
+        { status: 500 }
+      );
+    }
+
     const { error } = await supabaseAdmin!
       .from('courses')
       .delete()
       .eq('id', id);
-    
+
     if (error) {
       console.error('Delete course error:', error);
       return NextResponse.json(
@@ -219,7 +284,7 @@ export async function DELETE(
         { status: 500 }
       );
     }
-    
+
     return NextResponse.json({ message: 'Course deleted successfully' });
   } catch (error) {
     console.error('Course DELETE error:', error);

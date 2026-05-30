@@ -268,7 +268,13 @@ export default function CoursesPage() {
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   ) : (
-                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-secondary-500 to-secondary-700">
+                      <div className="text-center px-4">
+                        <div className="text-2xl font-serif font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] leading-tight">
+                          {course.title}
+                        </div>
+                      </div>
+                    </div>
                   )}
                   {/* Price badge */}
                   <div className="absolute top-0 right-0">
@@ -277,7 +283,7 @@ export default function CoursesPage() {
                         ${course.price}
                       </span>
                     ) : (
-                      <span className="inline-block px-4 py-2 border-b-2 border-l-2 border-black bg-secondary-400 font-mono text-[10px] font-bold text-black uppercase tracking-widest leading-none">
+                      <span className="inline-block px-4 py-2 border-b-2 border-l-2 border-black bg-[#facc15] font-mono text-[10px] font-bold text-black uppercase tracking-widest leading-none">
                         Free
                       </span>
                     )}
@@ -290,6 +296,10 @@ export default function CoursesPage() {
                         style={{ width: `${Math.min(enrollment.progress_percent, 100)}%` }}
                       />
                     </div>
+                  )}
+                  {/* Completed course overlay */}
+                  {enrollment && (enrollment.status === 'COMPLETED' || (enrollment.progress_percent >= 100)) && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-green-600" />
                   )}
                 </div>
 

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const statuses = effectiveStatus.split(',');
     let query = client
       .from('courses')
-      .select('*, instructor:users(*), lessons(count), enrollments(count)')
+      .select('*, instructor:users(id,email,full_name), lessons(count), enrollments(count)')
       .in('status', statuses)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -105,15 +105,39 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Prevent duplicate title
+    const normalizedTitle = validation.data.title.trim();
+    const { data: existingCourse, error: duplicateCheckError } = await supabaseAdmin!
+      .from('courses')
+      .select('id,title')
+      .ilike('title', normalizedTitle)
+      .maybeSingle();
+
+    if (duplicateCheckError && duplicateCheckError.code !== 'PGRST116') {
+      console.error('Duplicate title check error:', duplicateCheckError);
+      return NextResponse.json(
+        { error: 'Failed to validate course title' },
+        { status: 500 }
+      );
+    }
+
+    if (existingCourse) {
+      return NextResponse.json(
+        { error: 'Course title already exists' },
+        { status: 409 }
+      );
+    }
+
     // Create course
     const { data: course, error } = await supabaseAdmin!
       .from('courses')
       .insert({
         ...validation.data,
+        title: normalizedTitle,
         created_by: user.id,
         status: 'DRAFT',
       })
-      .select('*, instructor:users(*)')
+      .select('*, instructor:users(id,email,full_name)')
       .single();
     
     if (error) {

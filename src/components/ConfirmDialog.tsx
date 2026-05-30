@@ -9,7 +9,7 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
-export function ConfirmDialog({ open, title = 'Confirm Delete', message, confirmLabel = 'Delete', onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ open, title = 'Confirm', message, confirmLabel = 'Confirm', onConfirm, onCancel }: ConfirmDialogProps) {
   if (!open) return null;
 
   return (

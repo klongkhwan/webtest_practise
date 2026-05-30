@@ -379,7 +379,7 @@ export default function LessonPage() {
                           </svg>
                         )}
                         {l.is_free && (
-                          <span className={`badge-yellow px-2 py-0.5 !text-[9px] ${isActive ? '!bg-white/20 !text-white !border-white' : ''}`}>Preview</span>
+                          <span className={`badge-pink px-2 py-0.5 !text-[9px] ${isActive ? '!bg-white/20 !text-white !border-white' : ''}`}>Preview</span>
                         )}
                       </div>
                   </div>

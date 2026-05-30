@@ -26,14 +26,54 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
     
+    // Validate course exists
+    const { data: course, error: courseError } = await supabaseAdmin!
+      .from('courses')
+      .select('id')
+      .eq('id', courseId)
+      .maybeSingle();
+
+    if (courseError) {
+      console.error('Course lookup error:', courseError);
+      return NextResponse.json(
+        { error: 'Failed to validate course' },
+        { status: 500 }
+      );
+    }
+
+    if (!course) {
+      return NextResponse.json(
+        { error: 'Course does not exist' },
+        { status: 404 }
+      );
+    }
+
     // Get enrollment with progress
-    const { data: enrollment } = await supabaseAdmin!
+    const { data: enrollment, error: enrollmentError } = await supabaseAdmin!
       .from('enrollments')
       .select('*')
       .eq('user_id', user.id)
       .eq('course_id', courseId)
-      .single();
-    
+      .maybeSingle();
+
+    if (enrollmentError) {
+      console.error('Enrollment lookup error:', enrollmentError);
+      return NextResponse.json(
+        { error: 'Failed to validate enrollment' },
+        { status: 500 }
+      );
+    }
+
+    if (!enrollment) {
+      return NextResponse.json(
+        {
+          enrolled: false,
+          message: 'You are not enrolled in this course yet',
+        },
+        { status: 200 }
+      );
+    }
+
     // Get all lesson progress for this course
     const { data: lessonProgress, error } = await supabaseAdmin!
       .from('lesson_progress')

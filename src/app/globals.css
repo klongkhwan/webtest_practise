@@ -147,6 +147,10 @@
     @apply badge bg-[#a855f7] text-white;
   }
 
+  .badge-pink {
+    @apply badge bg-[#ec4899] text-white;
+  }
+
   .badge-gray {
     @apply badge bg-slate-200 text-slate-700;
   }

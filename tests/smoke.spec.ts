@@ -21,14 +21,10 @@ test('smoke: login successfully and navigate to dashboard', async ({ page }) => 
   // 3. กดปุ่ม Sign in
   await page.getByRole('button', { name: 'Sign in' }).click();
 
-  // 4. รอและตรวจสอบว่าเปลี่ยนหน้าไปยัง Dashboard สำเร็จ
-  await page.waitForURL((url) => url.pathname.includes('/dashboard') || url.toString() !== loginUrl, {
-    timeout: 10000,
-  });
+  // 4. รอและตรวจสอบว่าเปลี่ยนหน้าไปยัง Dashboard (เพิ่ม Timeout เป็น 20s สำหรับสภาพแวดล้อม CI)
+  await expect(page).toHaveURL(/.*dashboard.*/, { timeout: 20000 });
 
-  // 5. เช็คความถูกต้องของหน้า Dashboard
-  await expect(page).not.toHaveURL(loginUrl);
-   // ตรวจสอบองค์ประกอบเฉพาะในหน้า Dashboard
-  await expect(page.getByRole('heading', { name: 'ADMIN PREAW.' })).toBeVisible();
+  // 5. เช็คความถูกต้องขององค์ประกอบในหน้า Dashboard
+  await expect(page.getByRole('heading', { name: 'ADMIN PREAW.' })).toBeVisible({ timeout: 10000 });
   await expect(page.getByRole('link', { name: 'EXPLORE COURSES' })).toBeVisible();
 });

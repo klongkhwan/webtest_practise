@@ -11,16 +11,19 @@ jobs:
     name: Lint, type-check, and build
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+      # ใช้ vars. หรือ secrets. ให้ตรงกับที่ตั้งไว้ใน GitHub Settings
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || secrets.NEXT_PUBLIC_APP_URL }}
+      SMOKE_EMAIL: ${{ secrets.SMOKE_EMAIL || vars.SMOKE_EMAIL }}
+      SMOKE_PASSWORD: ${{ secrets.SMOKE_PASSWORD || vars.SMOKE_PASSWORD }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
@@ -46,7 +49,7 @@ jobs:
           echo $! > app.pid
 
       - name: Wait for application
-        run: npx wait-on http://127.0.0.1:3000
+        run: npx wait-on http://127.0.0.1:3000 --timeout 60000 || (cat app.log && exit 1)
 
       - name: Run login smoke test
         run: npx playwright test tests/smoke.spec.ts
@@ -55,35 +58,3 @@ jobs:
         if: always()
         run: |
           if [ -f app.pid ]; then kill $(cat app.pid) || true; fi
-
-      # Playwright smoke/e2e tests are intentionally left commented out for now.
-      # When your test suite is ready, you can enable either approach below.
-      #
-      # Option A: run Playwright directly in the GitHub Actions runner.
-      # - name: Install Playwright browsers
-      #   run: npx playwright install --with-deps
-      #
-      # - name: Start application
-      #   run: |
-      #     npm run dev > app.log 2>&1 &
-      #     echo $! > app.pid
-      #
-      # - name: Wait for application
-      #   run: npx wait-on http://127.0.0.1:3000
-      #
-      # - name: Run Playwright smoke tests
-      #   run: npx playwright test
-      #
-      # - name: Stop application
-      #   if: always()
-      #   run: |
-      #     if [ -f app.pid ]; then kill $(cat app.pid) || true; fi
-      #
-      # Option B: run Playwright in a Docker container for a more reproducible environment.
-      # - name: Run Playwright in Docker
-      #   run: |
-      #     docker run --rm \
-      #       -v "$PWD:/work" \
-      #       -w /work \
-      #       mcr.microsoft.com/playwright:v1.60.0-jammy \
-      #       bash -lc "npm ci && npx playwright test"

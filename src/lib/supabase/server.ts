@@ -11,16 +11,21 @@ export async function getAuthUser(request?: NextRequest) {
   // 1. Try Bearer token from Authorization header
   if (request) {
     const authHeader = request.headers.get('Authorization');
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data, error } = await supabaseAdmin!.auth.getUser(token);
-      if (!error && data.user) {
-        return data.user;
+    if (authHeader !== null) {
+      if (authHeader.startsWith('Bearer ')) {
+        const token = authHeader.replace('Bearer ', '');
+        const { data, error } = await supabaseAdmin!.auth.getUser(token);
+        if (!error && data.user) {
+          return data.user;
+        }
       }
+      // If an Authorization header is supplied but does not contain a valid Bearer token,
+      // do not fall back to a cookie session; return null (unauthorized)
+      return null;
     }
   }
 
-  // 2. Fallback to cookie-based session
+  // 2. Fallback to cookie-based session (only if no Authorization header was supplied)
   const supabase = await getServerClient();
   const { data, error } = await supabase.auth.getUser();
   if (!error && data.user) {
